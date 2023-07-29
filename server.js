@@ -169,7 +169,7 @@ server.get('/api/validatemail/:token/:email', validateToken, (req,res) => {
 
 server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {
     // check if e-mail exists in custormers' emails list
-    res.json(customers.find( customer => customer['email']==req.params.email && customer['Ενεργός']=="1" ) ?? null);
+    res.json(customers.find(customer => customer['email']==req.params.email)??null);
     // res.send(customerEmails.includes(req.params.email));        
 });
 
