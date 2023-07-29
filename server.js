@@ -41,6 +41,8 @@ let firebaseToken = process.env.FIREBASETOKEN;
 let userToken = process.env.USERTOKEN;
 let appId = (process.env.APPID).toString();
 let environment = process.env.ENVIRONMENT;
+let clientID = process.env.clientID;
+console.log(clientID);
 
 
 ///////////////////////////////////         MIDDLEWARE         /////////////////////////////////////
@@ -69,7 +71,7 @@ let fetchFromSoftone = async (sqlName,pagination=false) => {
         const response = await axios.get(process.env.SOFTONEURL, {
             data: {
                 service: "SqlData",
-                clientID: process.env.clientID,
+                clientID: clientID,
                 appId: "3002",
                 SqlName: sqlName,
                 page: pagination==true ? 1 : 0,
@@ -93,7 +95,7 @@ let fetchFromSoftone = async (sqlName,pagination=false) => {
 
 let fetchCustomers = async () => {
     let response = await fetchFromSoftone('CustomerData',false);
-    console.log(response);
+    // console.log(response);
     customers = response['rows'];
     let count = response['totalcount'];
     console.log(`Ήρθαν ${count} πελάτες`);
