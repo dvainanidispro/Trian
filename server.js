@@ -67,16 +67,17 @@ let fetchFromSoftone = async (sqlName,pagination=false) => {
     
     const response = await axios.get(process.env.SOFTONEURL, {
         data: {
-          service: 'SqlData',
+          service: "SqlData",
           clientID: process.env.clientID,
-          appId: appId,
+          appId: "3002",
           SqlName: sqlName,
           page: pagination==true ? 1 : 0,
           rowofpage: pagination==true ? 100 : 9999999,
         },
         responseType: 'arraybuffer',
         reponseEncoding: 'binary'
-    }).catch(error=>console.log(error.response.data));
+    });
+    console.log(response.status);
 
     // https://stackoverflow.com/questions/72446286/nodejs-decode-http-response-data-of-windows-1253-format
     const decoder = new TextDecoder('ISO-8859-7');
@@ -89,8 +90,8 @@ let fetchCustomers = async () => {
     customers = response['rows'];
     let count = response['totalcount'];
     console.log(`Ήρθαν ${count} πελάτες`);
-    customerEmails = customers.map(customer => customer['email']).filter(email => email!="null" && email.includes("@"));
-    console.log(`Έγκυρα e-mail πελατών: ${customerEmails.length} `);
+    // customerEmails = customers.map(customer => customer['email']).filter(email => email!="null" && email.includes("@"));
+    // console.log(`Έγκυρα e-mail πελατών: ${customerEmails.length} `);
 };
 fetchCustomers();
 
