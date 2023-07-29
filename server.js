@@ -65,28 +65,35 @@ let validateToken = (req,res,next) => {
  */
 let fetchFromSoftone = async (sqlName,pagination=false) => {
     
-    const response = await axios.get(process.env.SOFTONEURL, {
-        data: {
-          service: "SqlData",
-          clientID: process.env.clientID,
-          appId: "3002",
-          SqlName: sqlName,
-          page: pagination==true ? 1 : 0,
-          rowofpage: pagination==true ? 100 : 9999999,
-        },
-        responseType: 'arraybuffer',
-        reponseEncoding: 'binary'
-    });
-    console.log(response.status);
+    try{
+        const response = await axios.get(process.env.SOFTONEURL, {
+            data: {
+                service: "SqlData",
+                clientID: process.env.clientID,
+                appId: "3002",
+                SqlName: sqlName,
+                page: pagination==true ? 1 : 0,
+                rowofpage: pagination==true ? 100 : 9999999,
+            },
+            responseType: 'arraybuffer',
+            reponseEncoding: 'binary'
+        });
+        // console.log(response);
 
-    // https://stackoverflow.com/questions/72446286/nodejs-decode-http-response-data-of-windows-1253-format
-    const decoder = new TextDecoder('ISO-8859-7');
-    let decodedResponse = decoder.decode(response.data)
-    return JSON.parse(decodedResponse);   // this is an object now
+
+        // https://stackoverflow.com/questions/72446286/nodejs-decode-http-response-data-of-windows-1253-format
+        const decoder = new TextDecoder('ISO-8859-7');
+        let decodedResponse = decoder.decode(response.data)
+        return JSON.parse(decodedResponse);   // this is an object now
+
+    }catch(error){
+        console.log(error);
+    }
 };
 
 let fetchCustomers = async () => {
     let response = await fetchFromSoftone('CustomerData',false);
+    console.log(response);
     customers = response['rows'];
     let count = response['totalcount'];
     console.log(`Ήρθαν ${count} πελάτες`);
