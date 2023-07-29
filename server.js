@@ -39,7 +39,7 @@ let customerEmails = [];
 // Tokens to access API
 let firebaseToken = process.env.FIREBASETOKEN;
 let userToken = process.env.USERTOKEN;
-
+let appId = (process.env.APPID).toString();
 let environment = process.env.ENVIRONMENT;
 
 
@@ -60,23 +60,23 @@ let validateToken = (req,res,next) => {
 /**
  * 
  * @param {string} sqlName the name of the query to run
- * @param {"api"|"show"} format "api" or "show"
+ * @param {boolean} pagination set true to only fetch 100 records
  * @returns {PromiseLike<object>}
  */
-let fetchFromSoftone = async (sqlName,format="api") => {
+let fetchFromSoftone = async (sqlName,pagination=false) => {
     
     const response = await axios.get(process.env.SOFTONEURL, {
         data: {
           service: 'SqlData',
           clientID: process.env.clientID,
-          appId: (process.env.APPID).toString(),
+          appId: appId,
           SqlName: sqlName,
-          page: format=="show" ? 1 : 0,
-          rowofpage: format=="show" ? 100 : 9999999,
+          page: pagination==true ? 1 : 0,
+          rowofpage: pagination==true ? 100 : 9999999,
         },
         responseType: 'arraybuffer',
         reponseEncoding: 'binary'
-    });
+    }).catch(error=>console.log(error.response.data));
 
     // https://stackoverflow.com/questions/72446286/nodejs-decode-http-response-data-of-windows-1253-format
     const decoder = new TextDecoder('ISO-8859-7');
@@ -85,7 +85,7 @@ let fetchFromSoftone = async (sqlName,format="api") => {
 };
 
 let fetchCustomers = async () => {
-    let response = await fetchFromSoftone('CustomerData',"api");
+    let response = await fetchFromSoftone('CustomerData',false);
     customers = response['rows'];
     let count = response['totalcount'];
     console.log(`Ήρθαν ${count} πελάτες`);
@@ -108,7 +108,7 @@ server.get('/',(req,res)=>{
 });
 
 server.get('/show/:token/customers', async (req,res) => {
-    let customersObj = await fetchFromSoftone('CustomerData',"show");
+    let customersObj = await fetchFromSoftone('CustomerData',true);
     let customers = customersObj['rows'];  // τοπική μεταβλήτή, ώστε η global customers να μην αντικατασταθεί με μόνο 100 πελάτες 
     let count = customersObj['totalcount'];
     console.log(`fetched ${count} customers using "show" route`);
@@ -118,7 +118,7 @@ server.get('/show/:token/customers', async (req,res) => {
 });
 
 server.get('/show/:token/frames', async (req,res) => {
-    let dataObj = await fetchFromSoftone('ItemsData1',"show");
+    let dataObj = await fetchFromSoftone('ItemsData1',true);
     let count = dataObj['totalcount'];
     let data = dataObj['rows'];
 
@@ -127,7 +127,7 @@ server.get('/show/:token/frames', async (req,res) => {
 });
 
 server.get('/show/:token/lens', async (req,res) => {
-    let dataObj = await fetchFromSoftone('ItemsData2',"show");
+    let dataObj = await fetchFromSoftone('ItemsData2',true);
     let count = dataObj['totalcount'];
     let data = dataObj['rows'];
 
@@ -143,7 +143,7 @@ server.get('/api/:token/customers', async (req,res) => {
 });
 
 server.get('/api/:token/frames', async (req,res) => {
-    let response = await fetchFromSoftone('ItemsData1',"api");
+    let response = await fetchFromSoftone('ItemsData1');
     let data = response['rows'];
     let count = response['totalcount'];
     console.log(`Ήρθαν ${count} σκελετοί`);
@@ -151,7 +151,7 @@ server.get('/api/:token/frames', async (req,res) => {
 });
 
 server.get('/api/:token/lens', async (req,res) => {
-    let response = await fetchFromSoftone('ItemsData2',"api");
+    let response = await fetchFromSoftone('ItemsData2');
     let data = response['rows'];
     let count = response['totalcount'];
     console.log(`Ήρθαν ${count} φακοί`);
