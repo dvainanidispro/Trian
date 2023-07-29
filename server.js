@@ -41,8 +41,8 @@ let firebaseToken = process.env.FIREBASETOKEN;
 let userToken = process.env.USERTOKEN;
 let appId = (process.env.APPID).toString();
 let environment = process.env.ENVIRONMENT;
-let clientID = process.env.clientID;
-console.log(clientID);
+let clientID = process.env.CLIENTID;
+console.log({clientID});
 
 
 ///////////////////////////////////         MIDDLEWARE         /////////////////////////////////////
