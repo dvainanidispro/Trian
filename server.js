@@ -42,7 +42,8 @@ let userToken = process.env.USERTOKEN;
 let appId = (process.env.APPID).toString();
 let environment = process.env.ENVIRONMENT;
 let clientID = process.env.CLIENTID;
-console.log({clientID});
+// console.log({clientID});
+let customersRefreshIntervalInHours = process.env.CUSTOMERSREFRESHINTERVAL??24;
 
 
 ///////////////////////////////////         MIDDLEWARE         /////////////////////////////////////
@@ -82,7 +83,7 @@ let fetchFromSoftone = async (sqlName,pagination=false) => {
         });
         // console.log(response);
 
-
+        // Μετατρέπουμε τα αλαμπουρνέζικα σε unicode
         // https://stackoverflow.com/questions/72446286/nodejs-decode-http-response-data-of-windows-1253-format
         const decoder = new TextDecoder('ISO-8859-7');
         let decodedResponse = decoder.decode(response.data)
@@ -93,17 +94,19 @@ let fetchFromSoftone = async (sqlName,pagination=false) => {
     }
 };
 
+/** Function to fetch the new customers list from SoftOne */
 let fetchCustomers = async () => {
     let response = await fetchFromSoftone('CustomerData',false);
     // console.log(response);
     customers = response['rows'];
     let count = response['totalcount'];
     console.log(`Ήρθαν ${count} πελάτες`);
-    // customerEmails = customers.map(customer => customer['email']).filter(email => email!="null" && email.includes("@"));
-    // console.log(`Έγκυρα e-mail πελατών: ${customerEmails.length} `);
+    customerEmails = customers.map(customer => customer['email']).filter(email => email!="null" && email.includes("@"));
+    console.log(`Έγκυρα e-mail πελατών: ${customerEmails.length} `);
 };
 fetchCustomers();
-
+// run fetchCustomers every 12 hours
+setInterval(fetchCustomers,1000*60*60*customersRefreshIntervalInHours);     // refresh customers list every 12 hours
 
 
 
@@ -114,7 +117,7 @@ fetchCustomers();
 
 
 server.get('/',(req,res)=>{
-    res.send('TRIAN');
+    res.send('TRIAN API');
 });
 
 server.get('/show/:token/customers', async (req,res) => {
@@ -193,7 +196,7 @@ let listeningURL = process.env.LISTENINGURL??'http://localhost';
 const startWebServer = (server,port,listeningURL="http://localhost") => {
     server.listen(port, () => {
         let presentTime = () => (new Date()).toLocaleString('el-GR',{hourCycle: 'h23', dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Athens'});
-        console.log(`\x1b[35m Server is listening at \x1b[4m ${listeningURL}:${port} \x1b[0m\x1b[35m. Started at: ${presentTime()}. \x1b[0m`);
+        console.log(`\x1b[35m Server is listening at \x1b[4m ${listeningURL} \x1b[0m\x1b[35m. Started at: ${presentTime()}. \x1b[0m`);
     });
 };
 startWebServer(server,port,listeningURL);
