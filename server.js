@@ -48,7 +48,7 @@ let customersRefreshIntervalInHours = process.env.CUSTOMERSREFRESHINTERVAL??24;
 
 ///////////////////////////////////         MIDDLEWARE         /////////////////////////////////////
 
-/** Validate Token */
+/** Validate Token. Can't use server.use... */
 let validateToken = (req,res,next) => {
     if ([firebaseToken,userToken].includes(req.params.token)) {     // validate token
         next();
@@ -120,7 +120,11 @@ server.get('/',(req,res)=>{
     res.send('TRIAN API');
 });
 
-server.get('/show/:token/customers', async (req,res) => {
+
+///////////    PROTECTED ROUTES    ///////////
+
+
+server.get('/show/:token/customers', validateToken, async (req,res) => {
     let customersObj = await fetchFromSoftone('CustomerData',true);
     let customers = customersObj['rows'];  // τοπική μεταβλήτή, ώστε η global customers να μην αντικατασταθεί με μόνο 100 πελάτες 
     let count = customersObj['totalcount'];
@@ -130,7 +134,7 @@ server.get('/show/:token/customers', async (req,res) => {
     res.send(prettyJSON(customers));
 });
 
-server.get('/show/:token/frames', async (req,res) => {
+server.get('/show/:token/frames', validateToken, async (req,res) => {
     let dataObj = await fetchFromSoftone('ItemsData1',true);
     let count = dataObj['totalcount'];
     let data = dataObj['rows'];
@@ -139,7 +143,7 @@ server.get('/show/:token/frames', async (req,res) => {
     res.send(prettyJSON(data));
 });
 
-server.get('/show/:token/lens', async (req,res) => {
+server.get('/show/:token/lens', validateToken, async (req,res) => {
     let dataObj = await fetchFromSoftone('ItemsData2',true);
     let count = dataObj['totalcount'];
     let data = dataObj['rows'];
@@ -151,11 +155,11 @@ server.get('/show/:token/lens', async (req,res) => {
 
 ///////////////////////////////////        API ROUTES         /////////////////////////////////////
 
-server.get('/api/:token/customers', async (req,res) => {
+server.get('/api/:token/customers', validateToken, async (req,res) => {
     res.json(customers);
 });
 
-server.get('/api/:token/frames', async (req,res) => {
+server.get('/api/:token/frames', validateToken, async (req,res) => {
     let response = await fetchFromSoftone('ItemsData1');
     let data = response['rows'];
     let count = response['totalcount'];
@@ -163,7 +167,7 @@ server.get('/api/:token/frames', async (req,res) => {
     res.json(data);
 });
 
-server.get('/api/:token/lens', async (req,res) => {
+server.get('/api/:token/lens', validateToken, async (req,res) => {
     let response = await fetchFromSoftone('ItemsData2');
     let data = response['rows'];
     let count = response['totalcount'];
@@ -171,7 +175,7 @@ server.get('/api/:token/lens', async (req,res) => {
     res.json(data);
 });
 
-server.get('/api/:token/customeremails', (req,res) => {
+server.get('/api/:token/customeremails', validateToken, (req,res) => {
     res.json(customerEmails);
 });
 
