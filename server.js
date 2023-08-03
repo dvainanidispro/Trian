@@ -175,9 +175,9 @@ server.get('/api/:token/lens', validateToken, async (req,res) => {
     res.json(data);
 });
 
-server.get('/api/:token/customeremails', validateToken, (req,res) => {
-    res.json(customerEmails);
-});
+// server.get('/api/:token/customeremails', validateToken, (req,res) => {
+//     res.json(customerEmails);
+// });
 
 server.get('/api/validatemail/:token/:email', validateToken, (req,res) => {
     // check if e-mail exists in custormers' emails list

@@ -77,6 +77,12 @@ curl_close($ch);
 $response = iconv('WINDOWS-1253', 'UTF-8', $response);
 // $response_data = $response;
 
+// Decode the response JSON to an associative array
+$response_json = json_decode($response, true);
+// Now response_json is an array! For example $response_json['success']==true
+echo 'Imported '.$response_json['totalcount']. ' items from SoftOne.';
+echo ("\n");    // new line in console
+
 
 // Save the response body to the clients.json file
 if (file_put_contents($file_name, $response)) {
@@ -84,11 +90,3 @@ if (file_put_contents($file_name, $response)) {
 } else {
     echo 'Error saving the response body to '.$file_name;
 }
-
-
-echo ("\n");    // new line in console
-
-// Decode the response JSON to an associative array
-$response_json = json_decode($response, true);
-// Now response_json is an array! For example $response_json['success']==true
-echo 'Imported '.$response_json['totalcount']. ' items from SoftOne.';
