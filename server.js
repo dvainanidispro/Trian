@@ -33,6 +33,10 @@ server.use(express.static('public'));
 
 /** The list of customers. Array of objects */
 let customers = [];
+/** The list of lens. Array of objects */
+let lens = [];
+/** The list of frames. Array of objects */
+let frames = [];
 /** The list of customers' emails. Array of strings. Used for authentication */
 let customerEmails = [];
 
@@ -90,7 +94,7 @@ let fetchFromSoftone = async (sqlName,pagination=false) => {
         return JSON.parse(decodedResponse);   // this is an object now
 
     }catch(error){
-        console.log(error);
+        // console.log(error);
     }
 };
 
@@ -98,17 +102,21 @@ let fetchFromSoftone = async (sqlName,pagination=false) => {
 let fetchCustomers = async () => {
     let response = await fetchFromSoftone('CustomerData',false);
     // console.log(response);
-    customers = response['rows'];
-    let count = response['totalcount'];
-    console.log(`Ήρθαν ${count} πελάτες`);
-    customerEmails = customers.map(customer => customer['email']).filter(email => email!="null" && email.includes("@"));
-    console.log(`Έγκυρα e-mail πελατών: ${customerEmails.length} `);
+    try{
+        customers = response['rows'];
+        let count = response['totalcount'];
+        console.log(`Ήρθαν ${count} πελάτες`);
+        customerEmails = customers.map(customer => customer['email']).filter(email => email!="null" && email.includes("@"));
+        console.log(`Έγκυρα e-mail πελατών: ${customerEmails.length} `);
+    }catch(error){
+        console.error("Error loading customers from SoftOne");
+    }
 };
-fetchCustomers();
 // run fetchCustomers every 12 hours
 setInterval(fetchCustomers,1000*60*60*customersRefreshIntervalInHours);     // refresh customers list every 12 hours
 
-
+// Fetch Everything from SoftOne
+fetchCustomers();       //* TODO: fetchCustomers, then fetchLens, then fetchFrames
 
 
 
@@ -121,35 +129,48 @@ server.get('/',(req,res)=>{
 });
 
 
-///////////    PROTECTED ROUTES    ///////////
+//////////////////////    PROTECTED ROUTES    //////////////////////
+
+
+///////////    REALTIME SHOW ROUTES    ///////////
 
 
 server.get('/show/:token/customers', validateToken, async (req,res) => {
     let customersObj = await fetchFromSoftone('CustomerData',true);
-    let customers = customersObj['rows'];  // τοπική μεταβλήτή, ώστε η global customers να μην αντικατασταθεί με μόνο 100 πελάτες 
-    let count = customersObj['totalcount'];
-    console.log(`fetched ${count} customers using "show" route`);
+    try{
+        let customers = customersObj['rows'];  // τοπική μεταβλήτή, ώστε η global customers να μην αντικατασταθεί με μόνο 100 πελάτες 
+        let count = customersObj['totalcount'];
+        console.log(`fetched ${count} customers using "show" route`);
+        // res.send(''+count);     // if you send a number, it will be interpreted as a status code, not as a response body
+        res.send(prettyJSON(customers));
+    } catch(error){
+        res.send("Error loading customers from SoftOne");
+    }
 
-    // res.send(''+count);     // if you send a number, it will be interpreted as a status code, not as a response body
-    res.send(prettyJSON(customers));
 });
 
 server.get('/show/:token/frames', validateToken, async (req,res) => {
     let dataObj = await fetchFromSoftone('ItemsData1',true);
-    let count = dataObj['totalcount'];
-    let data = dataObj['rows'];
+    try{
+        let count = dataObj['totalcount'];
+        let data = dataObj['rows'];
+        res.send(prettyJSON(data));
+    } catch (error){
+        res.send("Error loading frames from SoftOne");
+    }
 
-    // res.send(''+count);     // if you send a number, it will be interpreted as a status code, not as a response body
-    res.send(prettyJSON(data));
 });
 
 server.get('/show/:token/lens', validateToken, async (req,res) => {
     let dataObj = await fetchFromSoftone('ItemsData2',true);
-    let count = dataObj['totalcount'];
-    let data = dataObj['rows'];
+    try{
+        let count = dataObj['totalcount'];
+        let data = dataObj['rows'];
+        res.send(prettyJSON(data));
+    } catch (error){
+        res.send("Error loading lens from SoftOne");
+    }
 
-    // res.send(''+count);     // if you send a number, it will be interpreted as a status code, not as a response body
-    res.send(prettyJSON(data));
 });
 
 
@@ -159,6 +180,7 @@ server.get('/api/:token/customers', validateToken, async (req,res) => {
     res.json(customers);
 });
 
+//# TODO: Να έρχεται η αποθηκευμένη τιμή όπως customers
 server.get('/api/:token/frames', validateToken, async (req,res) => {
     let response = await fetchFromSoftone('ItemsData1');
     let data = response['rows'];
@@ -167,6 +189,7 @@ server.get('/api/:token/frames', validateToken, async (req,res) => {
     res.json(data);
 });
 
+//# TODO: Να έρχεται η αποθηκευμένη τιμή όπως customers
 server.get('/api/:token/lens', validateToken, async (req,res) => {
     let response = await fetchFromSoftone('ItemsData2');
     let data = response['rows'];
