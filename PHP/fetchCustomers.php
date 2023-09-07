@@ -80,12 +80,13 @@ $response = iconv('WINDOWS-1253', 'UTF-8', $response);
 
 // Decode the response JSON to an associative array
 $response_json = json_decode($response, true);
-// Now response_json is an array! For example $response_json['success']==true
+// Now response_json is an object! For example $response_json['success']==true
 echo 'Imported '.$response_json['totalcount']. ' customers from SoftOne.';
 echo ("\n");    // new line in console
 
 
 // Save the response body to the customers.json file
+$response = json_encode($response_json['rows'],JSON_UNESCAPED_UNICODE);
 if (file_put_contents($file_name, $response)) {
     echo 'Response saved to '.$file_name;
 } else {

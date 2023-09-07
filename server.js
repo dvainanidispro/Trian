@@ -31,14 +31,22 @@ server.use(express.static('public'));
 
 ///////////////////////////////////         VARIABLES         /////////////////////////////////////
 
-/** The list of customers. Array of objects */
-let customers = [];
-/** The list of lens. Array of objects */
-let lens = [];
-/** The list of frames. Array of objects */
-let frames = [];
-/** The list of customers' emails. Array of strings. Used for authentication */
-let customerEmails = [];
+/** Initialize the object that holds the fetch functions from SoftOne */
+let SoftOne = {};
+
+/** Initialize the objects that holds all stored data */
+let Data = {
+    customers: [],
+    lens: [],
+    frames: [],
+    customerEmails: [],
+};
+
+/** Initialize the objects that holds the public data */
+let PublicData = {
+    lens: [],
+    frames: [],
+}
 
 // Tokens to access API
 let firebaseToken = process.env.FIREBASETOKEN;
@@ -47,7 +55,9 @@ let appId = (process.env.APPID).toString();
 let environment = process.env.ENVIRONMENT;
 let clientID = process.env.CLIENTID;
 // console.log({clientID});
-let customersRefreshIntervalInHours = process.env.CUSTOMERSREFRESHINTERVAL??24;
+let refreshIntervalInHours = process.env.REFRESHINTERVAL??24;
+let initialIntervalInSeconds = process.env.INITIALINTERVAL??60;    // in seconds
+
 
 
 ///////////////////////////////////         MIDDLEWARE         /////////////////////////////////////
@@ -62,7 +72,11 @@ let validateToken = (req,res,next) => {
 };
 
 
-///////////////////////////////////         GET DATA         /////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////         GET DATA PERIODICALLY        //////////////////////////////////
+
 
 /**
  * 
@@ -70,7 +84,7 @@ let validateToken = (req,res,next) => {
  * @param {boolean} pagination set true to only fetch 100 records
  * @returns {PromiseLike<object>}
  */
-let fetchFromSoftone = async (sqlName,pagination=false) => {
+SoftOne.fetch = async (sqlName,pagination=false) => {
     
     try{
         const response = await axios.get(process.env.SOFTONEURL, {
@@ -99,29 +113,72 @@ let fetchFromSoftone = async (sqlName,pagination=false) => {
 };
 
 /** Function to fetch the new customers list from SoftOne */
-let fetchCustomers = async () => {
-    let response = await fetchFromSoftone('CustomerData',false);
+SoftOne.customers = async function() {
+    let response = await SoftOne.fetch('CustomerData',false);
     // console.log(response);
-    try{
-        customers = response['rows'];
+    // try{
+        let customers = response['rows'];
+        Data.customers = customers;
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} πελάτες`);
-        customerEmails = customers.map(customer => customer['email']).filter(email => email!="null" && email.includes("@"));
-        console.log(`Έγκυρα e-mail πελατών: ${customerEmails.length} `);
-    }catch(error){
-        console.error("Error loading customers from SoftOne");
-    }
+        Data.customerEmails = customers.map(customer => customer['email']).filter(email => email!="null" && email.includes("@"));
+        console.log(`Έγκυρα e-mail πελατών: ${customers.length} `);
+    // }catch(error){
+    //     console.error("Error loading customers from SoftOne");
+    // }
+    // run fetchCustomers every this hours
+    setTimeout(SoftOne.customers,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
 };
-// run fetchCustomers every 12 hours
-setInterval(fetchCustomers,1000*60*60*customersRefreshIntervalInHours);     // refresh customers list every 12 hours
-
-// Fetch Everything from SoftOne
-fetchCustomers();       //* TODO: fetchCustomers, then fetchLens, then fetchFrames
 
 
 
 
-///////////////////////////////////        WEB ROUTES         /////////////////////////////////////
+/** Function to fetch the new frames list from SoftOne */
+SoftOne.frames = async function(){
+    let response = await SoftOne.fetch('ItemsData1',false);
+    // console.log(response);
+    try{
+        Data.frames = response['rows'];
+        let count = response['totalcount'];
+        console.log(`Ήρθαν ${count} σκελετοί`);
+    }catch(error){
+        console.error("Error loading frames from SoftOne");
+    }
+    // run fetchCustomers every this hours
+    setTimeout(SoftOne.frames,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
+};
+
+
+/** Function to fetch the new lens list from SoftOne */
+SoftOne.lens = async function(){
+    let response = await SoftOne.fetch('ItemsData2',false);
+    // console.log(response);
+    try{
+        Data.lens = response['rows'];
+        let count = response['totalcount'];
+        console.log(`Ήρθαν ${count} φακοί`);
+    }catch(error){
+        console.error("Error loading lens from SoftOne");
+    }
+    // run fetchCustomers every this hours
+    setTimeout(SoftOne.lens,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
+};
+
+
+
+//* fetchCustomers, then fetchLens, then fetchFrames, in intervals
+setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
+setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
+setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////        WEB ROUTES         ////////////////////////////////////////
 
 
 server.get('/',(req,res)=>{
@@ -129,14 +186,14 @@ server.get('/',(req,res)=>{
 });
 
 
-//////////////////////    PROTECTED ROUTES    //////////////////////
 
 
-///////////    REALTIME SHOW ROUTES    ///////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////        REALTIME "SHOW" ROUTES         //////////////////////////////////
 
 
 server.get('/show/:token/customers', validateToken, async (req,res) => {
-    let customersObj = await fetchFromSoftone('CustomerData',true);
+    let customersObj = await SoftOne.fetch('CustomerData',true);
     try{
         let customers = customersObj['rows'];  // τοπική μεταβλήτή, ώστε η global customers να μην αντικατασταθεί με μόνο 100 πελάτες 
         let count = customersObj['totalcount'];
@@ -150,9 +207,8 @@ server.get('/show/:token/customers', validateToken, async (req,res) => {
 });
 
 server.get('/show/:token/frames', validateToken, async (req,res) => {
-    let dataObj = await fetchFromSoftone('ItemsData1',true);
+    let dataObj = await SoftOne.fetch('ItemsData1',true);
     try{
-        let count = dataObj['totalcount'];
         let data = dataObj['rows'];
         res.send(prettyJSON(data));
     } catch (error){
@@ -162,9 +218,8 @@ server.get('/show/:token/frames', validateToken, async (req,res) => {
 });
 
 server.get('/show/:token/lens', validateToken, async (req,res) => {
-    let dataObj = await fetchFromSoftone('ItemsData2',true);
+    let dataObj = await SoftOne.fetch('ItemsData2',true);
     try{
-        let count = dataObj['totalcount'];
         let data = dataObj['rows'];
         res.send(prettyJSON(data));
     } catch (error){
@@ -174,49 +229,63 @@ server.get('/show/:token/lens', validateToken, async (req,res) => {
 });
 
 
-///////////////////////////////////        API ROUTES         /////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////        API ROUTES         ////////////////////////////////////////
+
+
+
+////////////////////////////////      FREE API ROUTES FOR E-SHOP      ///////////////////////////////////
+
+
+server.get('/api/frames', async (req,res) => {
+    // const response = (({ Κωδικός, Περιγραφή }) => ({ Κωδικός, Περιγραφή }))(frames);
+    // let response = {"Κωδικός","Περιγραφή","Κατασκευαστής","Μάρκα","Χρώμα","Μοντέλο"}
+    // res.json(response);
+    res.json("not ready yet");
+});
+
+server.get('/api/lens', validateToken, async (req,res) => {
+    res.json("not ready yet");
+});
+
+
+
+
+
+//////////////////////////      PROTECTED API ROUTES FOR CUSTOMERS AND FIREBASE      //////////////////
 
 server.get('/api/:token/customers', validateToken, async (req,res) => {
-    res.json(customers);
+    res.json(Data.customers);
 });
 
-//# TODO: Να έρχεται η αποθηκευμένη τιμή όπως customers
 server.get('/api/:token/frames', validateToken, async (req,res) => {
-    let response = await fetchFromSoftone('ItemsData1');
-    let data = response['rows'];
-    let count = response['totalcount'];
-    console.log(`Ήρθαν ${count} σκελετοί`);
-    res.json(data);
+    res.json(Data.frames);
 });
 
-//# TODO: Να έρχεται η αποθηκευμένη τιμή όπως customers
 server.get('/api/:token/lens', validateToken, async (req,res) => {
-    let response = await fetchFromSoftone('ItemsData2');
-    let data = response['rows'];
-    let count = response['totalcount'];
-    console.log(`Ήρθαν ${count} φακοί`);
-    res.json(data);
+    res.json(Data.lens);
 });
-
-// server.get('/api/:token/customeremails', validateToken, (req,res) => {
-//     res.json(customerEmails);
-// });
 
 server.get('/api/validatemail/:token/:email', validateToken, (req,res) => {
     // check if e-mail exists in custormers' emails list
-    res.send(customerEmails.includes(req.params.email));        
+    res.send(Data.customerEmails.includes(req.params.email));        
 });
 
 server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {
-    // check if e-mail exists in custormers' emails list
-    res.json(customers.find(customer => customer['email']==req.params.email)??null);
-    // res.send(customerEmails.includes(req.params.email));        
+    // check if e-mail exists in custormers' emails list and return customer
+    res.json(Data.customers.find(customer => customer['email']==req.params.email)??null);
+    // res.send(Data.customerEmails.includes(req.params.email));      // returns just true or false  
 });
 
 
 
 
-///////////////////////////////////         START THE SERVER         /////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////          START THE SERVER         /////////////////////////////////////
+
 
 let port = process.env.PORT??80;
 let listeningURL = process.env.LISTENINGURL??'http://localhost';
