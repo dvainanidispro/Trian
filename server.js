@@ -116,17 +116,17 @@ SoftOne.fetch = async (sqlName,pagination=false) => {
 SoftOne.customers = async function() {
     let response = await SoftOne.fetch('CustomerData',false);
     // console.log(response);
-    // try{
+    try{
         let customers = response['rows'];
         Data.customers = customers;
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} πελάτες`);
         Data.customerEmails = customers.map(customer => customer['email']).filter(email => email!="null" && email.includes("@"));
-        console.log(`Έγκυρα e-mail πελατών: ${customers.length} `);
-    // }catch(error){
-    //     console.error("Error loading customers from SoftOne");
-    // }
-    // run fetchCustomers every this hours
+        console.log(`Έγκυρα e-mail πελατών: ${Data.customerEmails.length} `);
+    }catch(error){
+        console.error("Error loading customers from SoftOne");
+    }
+    // run every this hours
     setTimeout(SoftOne.customers,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
 };
 
@@ -144,7 +144,7 @@ SoftOne.frames = async function(){
     }catch(error){
         console.error("Error loading frames from SoftOne");
     }
-    // run fetchCustomers every this hours
+    // run every this hours
     setTimeout(SoftOne.frames,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
 };
 
@@ -160,7 +160,7 @@ SoftOne.lens = async function(){
     }catch(error){
         console.error("Error loading lens from SoftOne");
     }
-    // run fetchCustomers every this hours
+    // run every this hours
     setTimeout(SoftOne.lens,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
 };
 
@@ -170,6 +170,10 @@ SoftOne.lens = async function(){
 setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
 setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
 setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
+
+
+
+
 
 
 
