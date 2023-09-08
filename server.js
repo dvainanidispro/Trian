@@ -45,8 +45,10 @@ let Data = {
 /** Initialize the objects that holds the public data */
 let PublicData = {
     lens: [],
+    lensTokai: [],
+    lensTrian: [],
     frames: [],
-}
+};
 
 // Tokens to access API
 let firebaseToken = process.env.FIREBASETOKEN;
@@ -136,27 +138,45 @@ SoftOne.customers = async function() {
 /** Function to fetch the new frames list from SoftOne */
 SoftOne.frames = async function(){
     let response = await SoftOne.fetch('ItemsData1',false);
-    // console.log(response);
     try{
-        Data.frames = response['rows'];
+        let frames = response['rows'];
+        Data.frames = frames;
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} σκελετοί`);
+        PublicData.frames = frames.map(frame => {
+            let {Κωδικός,Περιγραφή,Κατασκευαστής,Μάρκα,Χρώμα,Μοντέλο} = frame;
+            return {Κωδικός,Περιγραφή,Κατασκευαστής,Μάρκα,Χρώμα,Μοντέλο};
+        });
     }catch(error){
         console.error("Error loading frames from SoftOne");
     }
-    // run every this hours
-    setTimeout(SoftOne.frames,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
+    setTimeout(SoftOne.frames,1000*60*60*refreshIntervalInHours);         // refresh list every this hours
 };
 
 
 /** Function to fetch the new lens list from SoftOne */
 SoftOne.lens = async function(){
     let response = await SoftOne.fetch('ItemsData2',false);
-    // console.log(response);
     try{
-        Data.lens = response['rows'];
+        let lens = response['rows'];
+        Data.lens = lens;
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} φακοί`);
+        PublicData.lens = lens.map(frame => {
+            return {
+                "Κωδικός": frame['Κωδικός'],
+                "Περιγραφή": frame['Περιγραφή'],
+                "Κατασκευαστής": frame['Κατασκευαστής'],
+                "Σφαίρωμα": frame['Σφαίρωμα'],
+                "Κύλινδρος": frame['Κύλινδρος'],
+                "Διάθλ": frame['Διάθλ'],
+                "Επίστρωση": frame['Επίστρωση'],
+                "Υλικό": frame['Υλικό'],
+                "Διάμετρος": frame['Διάμετρος'],
+            };
+        });
+        PublicData.lensTokai = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TOKAI");
+        PublicData.lensTrian = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN");
     }catch(error){
         console.error("Error loading lens from SoftOne");
     }
@@ -166,11 +186,13 @@ SoftOne.lens = async function(){
 
 
 
-//* fetchCustomers, then fetchLens, then fetchFrames, in intervals
+//* fetch Customers, then Lens, then Frames, in intervals
 setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
 setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
 setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
-
+// SoftOne.customers();
+// SoftOne.frames();
+// SoftOne.lens();
 
 
 
@@ -243,15 +265,20 @@ server.get('/show/:token/lens', validateToken, async (req,res) => {
 ////////////////////////////////      FREE API ROUTES FOR E-SHOP      ///////////////////////////////////
 
 
-server.get('/api/frames', async (req,res) => {
-    // const response = (({ Κωδικός, Περιγραφή }) => ({ Κωδικός, Περιγραφή }))(frames);
-    // let response = {"Κωδικός","Περιγραφή","Κατασκευαστής","Μάρκα","Χρώμα","Μοντέλο"}
-    // res.json(response);
-    res.json("not ready yet");
+server.get(['/api/frames','/api/frames.json'], (req,res) => {
+    res.json(PublicData.frames);
 });
 
-server.get('/api/lens', validateToken, async (req,res) => {
-    res.json("not ready yet");
+// server.get('/api/lens', (req,res) => {
+//     res.json(PublicData.lens);
+// });
+
+server.get(['/api/lens/tokai','/api/lens/tokai.json'], (req,res) => {
+    res.json(PublicData.lensTokai);
+});
+
+server.get(['/api/lens/trian','/api/lens/trian.json'], (req,res) => {
+    res.json(PublicData.lensTrian);
 });
 
 
@@ -274,13 +301,12 @@ server.get('/api/:token/lens', validateToken, async (req,res) => {
 
 server.get('/api/validatemail/:token/:email', validateToken, (req,res) => {
     // check if e-mail exists in custormers' emails list
-    res.send(Data.customerEmails.includes(req.params.email));        
+    res.send(Data.customerEmails.includes(req.params.email));      // returns just true or false  
 });
 
 server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {
     // check if e-mail exists in custormers' emails list and return customer
     res.json(Data.customers.find(customer => customer['email']==req.params.email)??null);
-    // res.send(Data.customerEmails.includes(req.params.email));      // returns just true or false  
 });
 
 
