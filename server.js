@@ -73,6 +73,11 @@ let validateToken = (req,res,next) => {
     res.status(403).send('Forbidden');
 };
 
+/** Tells the browser to cache the response for 1 day */
+let cacheResponse = (req,res,next) => {
+    res.set('Cache-Control', 'public, max-age=86400');
+    next();
+};
 
 
 
@@ -265,7 +270,7 @@ server.get('/show/:token/lens', validateToken, async (req,res) => {
 ////////////////////////////////      FREE API ROUTES FOR E-SHOP      ///////////////////////////////////
 
 
-server.get(['/api/frames','/api/frames.json'], (req,res) => {
+server.get(['/api/frames','/api/frames.json'], cacheResponse, (req,res) => {
     res.json(PublicData.frames);
 });
 
@@ -273,11 +278,11 @@ server.get(['/api/frames','/api/frames.json'], (req,res) => {
 //     res.json(PublicData.lens);
 // });
 
-server.get(['/api/lens/tokai','/api/lens/tokai.json'], (req,res) => {
+server.get(['/api/lens/tokai','/api/lens/tokai.json'], cacheResponse, (req,res) => {
     res.json(PublicData.lensTokai);
 });
 
-server.get(['/api/lens/trian','/api/lens/trian.json'], (req,res) => {
+server.get(['/api/lens/trian','/api/lens/trian.json'], cacheResponse, (req,res) => {
     res.json(PublicData.lensTrian);
 });
 
