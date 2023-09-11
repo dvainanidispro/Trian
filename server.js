@@ -10,6 +10,7 @@
 require('dotenv').config();
 const express = require('express');
 const server = express();
+var cors = require('cors');
 
 // Cookies (makes req.cookies available)
 // const cookieParser = require('cookie-parser');
@@ -35,7 +36,10 @@ let {validateToken, cacheResponse} = require('./functions/middleware.js');
 let environment = process.env.ENVIRONMENT;
 let initialIntervalInSeconds = process.env.INITIALINTERVAL??40;    // in seconds
 
-
+// let trian.gr use the API
+server.use(cors({
+    origin: 'https://trian.gr',
+}));
 
 
 
