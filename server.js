@@ -3,6 +3,7 @@
 
 
 
+
 ///////////////////////////////////         DEPENDENCIES         /////////////////////////////////////
 
 
@@ -12,13 +13,6 @@ const express = require('express');
 const server = express();
 // Axios and encoding converter
 const axios = require('axios');
-// pretty print json
-const { prettyPrintJson } = require('pretty-print-json');
-let prettyJSON = Obj => /*html*/`
-    <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@2.0/dist/css/pretty-print-json.dark-mode.css>
-    <pre class=json-container >
-    ${prettyPrintJson.toHtml(Obj,{indent:4,trailingComma:false})}
-    </pre>`;
 // Cookies (makes req.cookies available)
 // const cookieParser = require('cookie-parser');
 // server.use(cookieParser());
@@ -26,6 +20,10 @@ let prettyJSON = Obj => /*html*/`
 server.use(express.urlencoded({extended: false})); 
 server.use(express.json());
 server.use(express.static('public')); 
+
+let { uniqueOf, prettyJSON } = require('./util.js');
+
+
 
 
 
@@ -48,6 +46,8 @@ let PublicData = {
     lensTokai: [],
     lensTrian: [],
     frames: [],
+    uniqueOfLens: {},
+    uniqueOfFrames: {},
 };
 
 // Tokens to access API
@@ -56,9 +56,10 @@ let userToken = process.env.USERTOKEN;
 let appId = (process.env.APPID).toString();
 let environment = process.env.ENVIRONMENT;
 let clientID = process.env.CLIENTID;
-// console.log({clientID});
 let refreshIntervalInHours = process.env.REFRESHINTERVAL??24;
-let initialIntervalInSeconds = process.env.INITIALINTERVAL??60;    // in seconds
+let initialIntervalInSeconds = process.env.INITIALINTERVAL??20;    // in seconds
+
+
 
 
 
@@ -73,11 +74,17 @@ let validateToken = (req,res,next) => {
     res.status(403).send('Forbidden');
 };
 
-/** Tells the browser to cache the response for 1 day */
+/** Tells the browser to cache the response for 12 hours */
 let cacheResponse = (req,res,next) => {
-    res.set('Cache-Control', 'public, max-age=86400');
+    res.set('Cache-Control', 'public, max-age=43200, immutable');
     next();
 };
+
+
+
+
+
+
 
 
 
@@ -149,9 +156,16 @@ SoftOne.frames = async function(){
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} σκελετοί`);
         PublicData.frames = frames.map(frame => {
-            let {Κωδικός,Περιγραφή,Κατασκευαστής,Μάρκα,Χρώμα,Μοντέλο} = frame;
-            return {Κωδικός,Περιγραφή,Κατασκευαστής,Μάρκα,Χρώμα,Μοντέλο};
+            return {
+                "Κωδικός": frame['Κωδικός'],
+                "Περιγραφή": frame['Περιγραφή'],
+                "Κατασκευαστής": frame['Κατασκευαστής'],
+                "Μάρκα": frame['Μάρκα'],
+                "Χρώμα": frame['Χρώμα'],
+                "Μοντέλο": frame['Μοντέλο'],
+            }
         });
+        PublicData.uniqueOfFrames = uniqueOf(PublicData.frames,["Κατασκευαστής","Μάρκα","Χρώμα","Μοντέλο"]);
     }catch(error){
         console.error("Error loading frames from SoftOne");
     }
@@ -171,10 +185,10 @@ SoftOne.lens = async function(){
             return {
                 "Κωδικός": frame['Κωδικός'],
                 "Περιγραφή": frame['Περιγραφή'],
-                "Κατασκευαστής": frame['Κατασκευαστής'],
+                "Κατασκευαστής": frame['Κατασκευαστής'], // not needed, only for testing
                 "Σφαίρωμα": frame['Σφαίρωμα'],
                 "Κύλινδρος": frame['Κύλινδρος'],
-                "Διάθλ": frame['Διάθλ'],
+                "Διάθλ": frame['Δείκτης Διάθλ.'],
                 "Επίστρωση": frame['Επίστρωση'],
                 "Υλικό": frame['Υλικό'],
                 "Διάμετρος": frame['Διάμετρος'],
@@ -182,6 +196,7 @@ SoftOne.lens = async function(){
         });
         PublicData.lensTokai = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TOKAI");
         PublicData.lensTrian = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN");
+        PublicData.uniqueOfLens = uniqueOf(PublicData.lens,["Κατασκευαστής","Σφαίρωμα","Κύλινδρος","Διάθλ","Επίστρωση","Υλικό","Διάμετρος"]);
     }catch(error){
         console.error("Error loading lens from SoftOne");
     }
@@ -191,13 +206,18 @@ SoftOne.lens = async function(){
 
 
 
-//* fetch Customers, then Lens, then Frames, in intervals
+//* fetch Customers, then Frames, then Lens, in intervals
 setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
 setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
 setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
 // SoftOne.customers();
 // SoftOne.frames();
 // SoftOne.lens();
+
+
+
+
+
 
 
 
@@ -234,7 +254,6 @@ server.get('/show/:token/customers', validateToken, async (req,res) => {
     } catch(error){
         res.send("Error loading customers from SoftOne");
     }
-
 });
 
 server.get('/show/:token/frames', validateToken, async (req,res) => {
@@ -245,7 +264,6 @@ server.get('/show/:token/frames', validateToken, async (req,res) => {
     } catch (error){
         res.send("Error loading frames from SoftOne");
     }
-
 });
 
 server.get('/show/:token/lens', validateToken, async (req,res) => {
@@ -256,7 +274,6 @@ server.get('/show/:token/lens', validateToken, async (req,res) => {
     } catch (error){
         res.send("Error loading lens from SoftOne");
     }
-
 });
 
 
@@ -267,7 +284,8 @@ server.get('/show/:token/lens', validateToken, async (req,res) => {
 
 
 
-////////////////////////////////      FREE API ROUTES FOR E-SHOP      ///////////////////////////////////
+
+////////////////////////////////      PUBLIC API ROUTES FOR E-SHOP      ///////////////////////////////////
 
 
 server.get(['/api/frames','/api/frames.json'], cacheResponse, (req,res) => {
@@ -287,10 +305,18 @@ server.get(['/api/lens/trian','/api/lens/trian.json'], cacheResponse, (req,res) 
 });
 
 
+server.get(['/api/unique/frames','/api/unique/frames.json'], cacheResponse, (req,res) => {
+    res.json(PublicData.uniqueOfFrames);
+});
+
+server.get(['/api/unique/lens','/api/unique/lens.json'], cacheResponse, (req,res) => {
+    res.json(PublicData.uniqueOfLens);
+});
 
 
 
-//////////////////////////      PROTECTED API ROUTES FOR CUSTOMERS AND FIREBASE      //////////////////
+
+//////////////////////////      PROTECTED API ROUTES FOR SYSTEM AND FIREBASE      //////////////////
 
 server.get('/api/:token/customers', validateToken, async (req,res) => {
     res.json(Data.customers);
@@ -313,6 +339,10 @@ server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {
     // check if e-mail exists in custormers' emails list and return customer
     res.json(Data.customers.find(customer => customer['email']==req.params.email)??null);
 });
+
+
+
+
 
 
 
