@@ -1,3 +1,8 @@
+'use strict';
+
+
+//////////////////////////      PreetyJSON
+
 const { prettyPrintJson } = require('pretty-print-json');
 /** Gets an array/object in json format and returns an html that looks nice! */
 exports.prettyJSON = Obj => /*html*/`
@@ -7,6 +12,9 @@ exports.prettyJSON = Obj => /*html*/`
     </pre>
 `;
 
+
+
+//////////////////////////      UniqueOf
 
 
 /** Recieves an array of objects with similar properties and returns an object, 
