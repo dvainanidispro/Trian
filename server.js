@@ -118,6 +118,16 @@ server.get(['/api/unique/lens','/api/unique/lens.json'], cacheResponse, (req,res
 });
 
 
+server.get(['/api/unique/lens-trian','/api/unique/lens-trian.json'], cacheResponse, (req,res) => {
+    res.json(PublicData.uniqueOfLensTrian);
+});
+
+
+server.get(['/api/unique/lens-tokai','/api/unique/lens-tokai.json'], cacheResponse, (req,res) => {
+    res.json(PublicData.uniqueOfLensTokai);
+});
+
+
 
 
 //////////////////////////      PROTECTED API ROUTES FOR SYSTEM AND FIREBASE      //////////////////

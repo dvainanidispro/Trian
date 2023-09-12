@@ -41,6 +41,8 @@ let PublicData = {
     lensTrian: [],
     frames: [],
     uniqueOfLens: {},
+    uniqueOfLensTrian: {},
+    uniqueOfLensTokai: {},
     uniqueOfFrames: {},
 };
 
@@ -142,6 +144,7 @@ SoftOne.lens = async function(){
         Data.lens = lens;
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} φακοί`);
+
         PublicData.lens = lens.map(frame => {
             return {
                 "Κωδικός": frame['Κωδικός'],
@@ -157,7 +160,13 @@ SoftOne.lens = async function(){
         });
         PublicData.lensTokai = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TOKAI");
         PublicData.lensTrian = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN");
-        PublicData.uniqueOfLens = uniqueOf(PublicData.lens,["Κατασκευαστής","Σφαίρωμα","Κύλινδρος","Διάθλ","Επίστρωση","Υλικό","Διάμετρος"]);
+
+        let lensAttributes = ["Κατασκευαστής","Σφαίρωμα","Κύλινδρος","Διάθλ","Επίστρωση","Υλικό","Διάμετρος"];
+        PublicData.uniqueOfLens = uniqueOf(PublicData.lens,lensAttributes);
+
+        lensAttributes = lensAttributes.filter(attribute => attribute!="Κατασκευαστής");
+        PublicData.uniqueOfLensTokai = uniqueOf(PublicData.lensTokai,lensAttributes);
+        PublicData.uniqueOfLensTrian = uniqueOf(PublicData.lensTrian,lensAttributes);
     }catch(error){
         console.error("Error loading lens from SoftOne");
     }
