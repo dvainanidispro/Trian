@@ -16,14 +16,14 @@ let filterLimit = process.env.FILTERLIMIT??50;
 // Get requests having a JSON object as body. This JSON is the filter
 
 
-router.get('/lens/trian', (req,res) => {
+router.post('/lens/trian', (req,res) => {
     let lens = PublicData.lensTrian;
     let filter = req.body;
     res.json(multiFilter(lens,filter,filterLimit));
 });
 
 // Get request with body a json object that is the filter
-router.get('/lens/tokai', (req,res) => {
+router.post('/lens/tokai', (req,res) => {
     let lens = PublicData.lensTokai;
     let filter = req.body;
     res.json(multiFilter(lens,filter,filterLimit));
@@ -31,7 +31,7 @@ router.get('/lens/tokai', (req,res) => {
 
 
 // Get request with body a json object that is the filter
-router.get('/frames/', (req,res) => {
+router.post('/frames/', (req,res) => {
     let frames = PublicData.frames;
     let filter = req.body;
     res.json(multiFilter(frames,filter,filterLimit));
