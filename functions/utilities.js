@@ -55,7 +55,7 @@ exports.uniqueOf = (arrayOfObjects, arrayOfKeys=null) => {
 //////////////////////////      MultiFilter
 
 /** Filters an Array of Objects using an Object as filters */
-exports.multiFilter = (dataArray, filterObject, limit=null) => {
+let multiFilter = (dataArray, filterObject, limit=null) => {
 
     // clear filter from null/undefined/nullish keys
     // warning! do not change filterObject (because it is passed by reference)!
@@ -74,3 +74,28 @@ exports.multiFilter = (dataArray, filterObject, limit=null) => {
    // return entire result or limit it
    return limit ? result.slice(0,limit-1) : result;
  }; 
+exports.multiFilter = multiFilter;
+
+
+
+
+  //////////////////////////      TreeOf
+
+let unique = (arr) => [...new Set(arr)];
+
+let uniqueKeys = (arrayOfObjects, Key) => {
+    return unique( arrayOfObjects.map(item=>item[Key]) );
+};
+
+exports.treeOf = (arrayOfObjects, keys) => {
+    let tree = {};
+    tree[keys[0]] = {};
+    tree[keys[1]] = {};
+    let uniqueOf1 = uniqueKeys(arrayOfObjects,keys[0]);
+    tree[keys[0]] = uniqueOf1;
+    uniqueOf1.forEach(item => {
+        let uniqueOf2 = uniqueKeys(multiFilter(arrayOfObjects,{[keys[0]]:item}),keys[1]);
+        tree[keys[1]][item] = uniqueOf2;
+    });
+    return tree;
+};

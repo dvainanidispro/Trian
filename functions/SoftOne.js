@@ -6,7 +6,7 @@
 ///////////////////////////////////          DEPENDENCIES          ////////////////////////////////////
 require('dotenv').config();
 const axios = require('axios');
-let { uniqueOf } = require('./utilities.js');
+let { uniqueOf, treeOf } = require('./utilities.js');
 
 
 
@@ -44,6 +44,8 @@ let PublicData = {
     uniqueOfLensTrian: {},
     uniqueOfLensTokai: {},
     uniqueOfFrames: {},
+    treeOfLensTrian: {},
+    treeOfLensTokai: {},
 };
 
 
@@ -167,6 +169,11 @@ SoftOne.lens = async function(){
         lensAttributes = lensAttributes.filter(attribute => attribute!='Κατασκευαστής');
         PublicData.uniqueOfLensTokai = uniqueOf(PublicData.lensTokai,lensAttributes);
         PublicData.uniqueOfLensTrian = uniqueOf(PublicData.lensTrian,lensAttributes);
+
+        PublicData.treeOfLensTrian = treeOf(PublicData.lensTrian,["Σφαίρωμα","Κύλινδρος"]);
+        PublicData.treeOfLensTokai = treeOf(PublicData.lensTokai,["Σφαίρωμα","Κύλινδρος"]);
+        console.log("Επιτυχής δημιουργία trees");
+
     }catch(error){
         console.error("Error loading lens from SoftOne");
     }
