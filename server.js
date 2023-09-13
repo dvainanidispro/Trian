@@ -49,12 +49,12 @@ server.use(cors({
 
 
 //* fetch Customers, then Frames, then Lens, in intervals
-// setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
-// setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
-// setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
+setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
+setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
+setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
 // SoftOne.customers();
 // SoftOne.frames();
-SoftOne.lens();
+// SoftOne.lens();
 
 
 

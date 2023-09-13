@@ -84,7 +84,7 @@ exports.multiFilter = multiFilter;
 let unique = (arr) => [...new Set(arr)];
 
 let uniqueKeys = (arrayOfObjects, Key) => {
-    return unique( arrayOfObjects.map(item=>item[Key]) );
+    return unique( arrayOfObjects.map(item=>item[Key]) ).sort();
 };
 
 exports.treeOf = (arrayOfObjects, keys) => {
