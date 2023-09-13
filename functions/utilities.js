@@ -16,7 +16,6 @@ exports.prettyJSON = Obj => /*html*/`
 
 //////////////////////////      UniqueOf
 
-
 /** 
  * Recieves an array of objects with similar properties and returns an object, 
  * the properties of which are arrays of unique values found in the input array's objects 
@@ -52,3 +51,26 @@ exports.uniqueOf = (arrayOfObjects, arrayOfKeys=null) => {
 
 
 
+
+//////////////////////////      MultiFilter
+
+/** Filters an Array of Objects using an Object as filters */
+exports.multiFilter = (dataArray, filterObject, limit=null) => {
+
+    // clear filter from null/undefined/nullish keys
+    // warning! do not change filterObject (because it is passed by reference)!
+     let clearedFilter = {}; 
+     for (const key in filterObject) {
+         if (filterObject[key]!==null && filterObject[key]!=="") { clearedFilter[key]=filterObject[key]};
+     }
+ 
+   // apply filter
+   let result = dataArray.filter(item => {  
+       return Object.keys(clearedFilter).every(key => {
+           return filterObject[key] === item[key]
+       });
+   });
+ 
+   // return entire result or limit it
+   return limit ? result.slice(0,limit-1) : result;
+ }; 

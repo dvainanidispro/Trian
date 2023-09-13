@@ -161,10 +161,10 @@ SoftOne.lens = async function(){
         PublicData.lensTokai = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TOKAI");
         PublicData.lensTrian = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN");
 
-        let lensAttributes = ["Κατασκευαστής","Σφαίρωμα","Κύλινδρος","Διάθλ","Επίστρωση","Υλικό","Διάμετρος"];
+        let lensAttributes = ['Κατασκευαστής','Σφαίρωμα','Κύλινδρος','Διάθλ','Επίστρωση','Υλικό','Διάμετρος'];
         PublicData.uniqueOfLens = uniqueOf(PublicData.lens,lensAttributes);
 
-        lensAttributes = lensAttributes.filter(attribute => attribute!="Κατασκευαστής");
+        lensAttributes = lensAttributes.filter(attribute => attribute!='Κατασκευαστής');
         PublicData.uniqueOfLensTokai = uniqueOf(PublicData.lensTokai,lensAttributes);
         PublicData.uniqueOfLensTrian = uniqueOf(PublicData.lensTrian,lensAttributes);
     }catch(error){

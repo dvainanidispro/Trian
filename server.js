@@ -16,8 +16,8 @@ var cors = require('cors');
 // const cookieParser = require('cookie-parser');
 // server.use(cookieParser());
 // grab post/put variables, json objects and send static files
-// server.use(express.urlencoded({extended: false})); 
-// server.use(express.json());
+server.use(express.urlencoded({extended: false})); 
+server.use(express.json());
 // server.use(express.static('public')); 
 
 
@@ -80,15 +80,6 @@ server.get('/',(req,res)=>{
 
 
 
-////////////////////////////////        REALTIME "SHOW" ROUTES         //////////////////////////////////
-
-const showRouter = require('./functions/show.js');
-server.use('/show', showRouter);
-
-
-
-
-
 ////////////////////////////////      PUBLIC API ROUTES FOR E-SHOP      ///////////////////////////////////
 
 
@@ -117,11 +108,9 @@ server.get(['/api/unique/lens','/api/unique/lens.json'], cacheResponse, (req,res
     res.json(PublicData.uniqueOfLens);
 });
 
-
 server.get(['/api/unique/lens-trian','/api/unique/lens-trian.json'], cacheResponse, (req,res) => {
     res.json(PublicData.uniqueOfLensTrian);
 });
-
 
 server.get(['/api/unique/lens-tokai','/api/unique/lens-tokai.json'], cacheResponse, (req,res) => {
     res.json(PublicData.uniqueOfLensTokai);
@@ -129,18 +118,32 @@ server.get(['/api/unique/lens-tokai','/api/unique/lens-tokai.json'], cacheRespon
 
 
 
+////////////////////////////////        REALTIME "SHOW" ROUTES         //////////////////////////////////
+
+const showRouter = require('./functions/show.js');
+server.use('/show', showRouter);
+
+
+
+////////////////////////////////             FILTER ROUTES             //////////////////////////////////
+
+const filterRouter = require('./functions/filter.js');
+server.use('/api/filter', filterRouter);
+
+
+
 
 //////////////////////////      PROTECTED API ROUTES FOR SYSTEM AND FIREBASE      //////////////////
 
-server.get('/api/:token/customers', validateToken, async (req,res) => {
+server.get('/api/all/:token/customers', validateToken, async (req,res) => {
     res.json(Data.customers);
 });
 
-server.get('/api/:token/frames', validateToken, async (req,res) => {
+server.get('/api/all/:token/frames', validateToken, async (req,res) => {
     res.json(Data.frames);
 });
 
-server.get('/api/:token/lens', validateToken, async (req,res) => {
+server.get('/api/all/:token/lens', validateToken, async (req,res) => {
     res.json(Data.lens);
 });
 
