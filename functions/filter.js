@@ -8,7 +8,7 @@ let {PublicData} = require('./SoftOne.js');
 let {multiFilter} = require('./utilities.js');
 
 
-let filterLimit = process.env.FILTERLIMIT??50;   
+let filterLimit = process.env.FILTERLIMIT??1000;   
 
 
 ////////////////////////////////             FILTER ROUTES             //////////////////////////////////

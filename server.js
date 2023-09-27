@@ -52,6 +52,7 @@ server.use(cors({
 setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
 setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
 setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
+
 // SoftOne.customers();
 // SoftOne.frames();
 // SoftOne.lens();
@@ -135,6 +136,13 @@ server.use('/api/filter', filterRouter);
 
 const treeRouter = require('./functions/tree.js');
 server.use('/api/tree', treeRouter);
+
+
+
+////////////////////////////////             ORDER ROUTES             //////////////////////////////////
+
+const orderRouter = require('./functions/order.js');
+server.use('/api/order', orderRouter);
 
 
 

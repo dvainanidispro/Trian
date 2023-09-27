@@ -5,6 +5,7 @@
 const router = require('express').Router();
 let {PublicData} = require('./SoftOne.js');
 let {multiFilter, uniqueOf, uniqueKeys} = require('./utilities.js');
+let {cacheResponse} = require('./middleware.js');
 
 
 ////////////////////////////////             FILTER ROUTES             //////////////////////////////////
@@ -12,13 +13,23 @@ let {multiFilter, uniqueOf, uniqueKeys} = require('./utilities.js');
 // Get requests having a JSON object as body. This JSON is the filter
 
 
-router.get(['/lens/trian','/lens/trian.json'], (req,res) => {
+router.get(['/lens/trian','/lens/trian.json'], cacheResponse, (req,res) => {
     res.json(PublicData.treeOfLensTrian);
 });
 
 
-router.get(['/lens/tokai','/lens/tokai.json'], (req,res) => {
+router.get(['/lens/tokai','/lens/tokai.json'], cacheResponse, (req,res) => {
     res.json(PublicData.treeOfLensTokai);
+});
+
+
+router.get(['/lens/trian','/lens/trian-alt.json'], cacheResponse, (req,res) => {
+    res.json(PublicData.treeOfLensTrianAlt);
+});
+
+
+router.get(['/lens/tokai','/lens/tokai-alt.json'], cacheResponse, (req,res) => {
+    res.json(PublicData.treeOfLensTokaiAlt);
 });
 
 
@@ -48,3 +59,5 @@ router.post('/frames/', (req,res) => {
 ///////////////////////////////////         EXPORTS         /////////////////////////////////////
 
 module.exports = router;
+
+

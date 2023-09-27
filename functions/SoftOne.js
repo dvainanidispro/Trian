@@ -46,6 +46,8 @@ let PublicData = {
     uniqueOfFrames: {},
     treeOfLensTrian: {},
     treeOfLensTokai: {},
+    treeOfLensTrianAlt: {},
+    treeOfLensTokaiAlt: {},
 };
 
 
@@ -154,6 +156,8 @@ SoftOne.lens = async function(){
                 "Κατασκευαστής": frame['Κατασκευαστής'], // not needed, only for testing
                 "Σφαίρωμα": frame['Σφαίρωμα'],
                 "Κύλινδρος": frame['Κύλινδρος'],
+                "Σφαίρωμα2": frame['Σφαίρωμα2'],
+                "Κύλινδρος2": frame['Κύλινδρος2'],
                 "Διάθλ": frame['Δείκτης Διάθλ.'],
                 "Επίστρωση": frame['Επίστρωση'],
                 "Υλικό": frame['Υλικό'],
@@ -169,9 +173,12 @@ SoftOne.lens = async function(){
         lensAttributes = lensAttributes.filter(attribute => attribute!='Κατασκευαστής');
         PublicData.uniqueOfLensTokai = uniqueOf(PublicData.lensTokai,lensAttributes);
         PublicData.uniqueOfLensTrian = uniqueOf(PublicData.lensTrian,lensAttributes);
+        console.log(`Φακοί Trian: ${Object.keys(PublicData.lensTrian).length}, Φακοί Tokai: ${Object.keys(PublicData.lensTokai).length}`);
 
         PublicData.treeOfLensTrian = treeOf(PublicData.lensTrian,["Σφαίρωμα","Κύλινδρος"]);
         PublicData.treeOfLensTokai = treeOf(PublicData.lensTokai,["Σφαίρωμα","Κύλινδρος"]);
+        PublicData.treeOfLensTrianAlt = treeOf(PublicData.lensTrian,["Σφαίρωμα2","Κύλινδρος2"]);
+        PublicData.treeOfLensTokaiAlt = treeOf(PublicData.lensTokai,["Σφαίρωμα2","Κύλινδρος2"]);
         console.log("Επιτυχής δημιουργία trees");
 
     }catch(error){
