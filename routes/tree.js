@@ -3,9 +3,9 @@
 
 ///////////////////////////////////          DEPENDENCIES          ////////////////////////////////////
 const router = require('express').Router();
-let {PublicData} = require('./SoftOne.js');
-let {multiFilter, uniqueOf, uniqueKeys} = require('./utilities.js');
-let {cacheResponse} = require('./middleware.js');
+let {PublicData} = require('../controllers/SoftOne.js');
+let {multiFilter, uniqueOf, uniqueKeys} = require('../controllers/utilities.js');
+let {cacheResponse} = require('../controllers/middleware.js');
 
 
 ////////////////////////////////             FILTER ROUTES             //////////////////////////////////

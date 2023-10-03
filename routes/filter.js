@@ -4,8 +4,8 @@
 ///////////////////////////////////          DEPENDENCIES          ////////////////////////////////////
 require('dotenv').config();
 const router = require('express').Router();
-let {PublicData} = require('./SoftOne.js');
-let {multiFilter} = require('./utilities.js');
+let {PublicData} = require('../controllers/SoftOne.js');
+let {multiFilter} = require('../controllers/utilities.js');
 
 
 let filterLimit = process.env.FILTERLIMIT??1000;   

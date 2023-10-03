@@ -79,7 +79,7 @@ exports.multiFilter = multiFilter;
 
 
 
-  //////////////////////////      TreeOf
+//////////////////////////      TreeOf
 
 let unique = (arr) => [...new Set(arr)];
 

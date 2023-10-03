@@ -27,10 +27,10 @@ server.use(express.json());
 ///////////////////////////////         VARIABLES & FUNCTIONS         ////////////////////////////////
 
 // SoftOneData
-let {SoftOne, PublicData, Data} = require('./functions/SoftOne.js');
+let {SoftOne, PublicData, Data} = require('./controllers/SoftOne.js');
 
 // Middleware
-let {validateToken, cacheResponse} = require('./functions/middleware.js');
+let {validateToken, cacheResponse} = require('./controllers/middleware.js');
 
 // Other variables
 let environment = process.env.ENVIRONMENT;
@@ -121,27 +121,27 @@ server.get(['/api/unique/lens-tokai','/api/unique/lens-tokai.json'], cacheRespon
 
 ////////////////////////////////        REALTIME "SHOW" ROUTES         //////////////////////////////////
 
-const showRouter = require('./functions/show.js');
+const showRouter = require('./routes/show.js');
 server.use('/show', showRouter);
 
 
 
 ////////////////////////////////             FILTER ROUTES             //////////////////////////////////
 
-const filterRouter = require('./functions/filter.js');
+const filterRouter = require('./routes/filter.js');
 server.use('/api/filter', filterRouter);
 
 
 ////////////////////////////////             TREE ROUTES             //////////////////////////////////
 
-const treeRouter = require('./functions/tree.js');
+const treeRouter = require('./routes/tree.js');
 server.use('/api/tree', treeRouter);
 
 
 
 ////////////////////////////////             ORDER ROUTES             //////////////////////////////////
 
-const orderRouter = require('./functions/order.js');
+const orderRouter = require('./routes/order.js');
 server.use('/api/order', orderRouter);
 
 
