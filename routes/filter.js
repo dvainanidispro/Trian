@@ -2,7 +2,7 @@
 
 
 ///////////////////////////////////          DEPENDENCIES          ////////////////////////////////////
-require('dotenv').config();
+// require('dotenv').config();
 const router = require('express').Router();
 let {PublicData} = require('../controllers/SoftOne.js');
 let {multiFilter} = require('../controllers/utilities.js');

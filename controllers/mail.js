@@ -1,6 +1,6 @@
 "use strict";
 const nodemailer = require("nodemailer");
-require('dotenv').config();
+// require('dotenv').config();
 
 // INITIALIZE MAIL TRANSPORTER
 let transporter = nodemailer.createTransport({
@@ -41,13 +41,22 @@ let mailBody = (order, recipient) => {
 
     let body = /*html*/`
 
-        <style>
-            table, th, td { border:1px solid black; border-collapse: collapse; padding: 8px; line-height: 1.6; }
-            th:first-child, td:first-child { text-align:left; }
-            td:nth-child(2) { text-align:center; }
-            td:nth-child(4) { font-weight:bold; }
-            h2, table { margin-bottom: 0.5rem; }
-        </style>
+        <!doctype html>
+        <html lang="el">
+
+        <head>
+
+                <style>
+                    table, th, td { border:1px solid black; border-collapse: collapse; padding: 8px; line-height: 1.6; }
+                    /* th:first-child, td:first-child { text-align:left; }
+                    td:nth-child(2) { text-align:center; }
+                    td:nth-child(4) { font-weight:700; }*/
+                    h2, table { margin-bottom: 10px; }
+                </style>
+
+        </head>
+
+        <body>
 
         ${ (recipient=="customer") ? `<h1>Ευχαριστούμε για την Παραγγελία!</h1>` : ``}
 
@@ -57,13 +66,15 @@ let mailBody = (order, recipient) => {
         <br><br>
         
         <h2>Στοιχεία πελάτη</h2>
-        ${order.customer}      
+        Επωνυμία: ${order.customer['Επωνυμία']} <br>
+        ΑΦΜ: ${order.customer['Α.Φ.Μ.']} <br>
+        Διεύθυνση: ${order.customer['Διεύθυνση']}, ${order.customer['Τ.Κ.']}, ${order.customer['Πόλη']} <br>
         <br><br>
 
         <h2> Προϊόντα παραγγελίας</h2>
         <table>
             <thead><tr>
-                <th>Τύπος</th><th>Ποσότητα</th><th>Κωδικός</th><th>Περιγραφή</th>
+                <th style="text-align:left" >Τύπος</th><th>Ποσότητα</th><th>Κωδικός</th><th>Περιγραφή</th>
             </tr></thead>
             <tbody>
     `;
@@ -71,10 +82,10 @@ let mailBody = (order, recipient) => {
 
     order.cart.forEach(item => {body+= /*html*/` 
         <tr>
-            <td>
+            <td style="text-align:left" >
                 ${typeGR(item.type)}
             </td>
-            <td>
+            <td style="text-align:center" >
                 ${item.quantity}
             </td>
             <td>
@@ -86,7 +97,7 @@ let mailBody = (order, recipient) => {
                             +"L: "+item.item.L["Κωδικός"]
                 }
             </td>
-            <td>
+            <td style="font-weight:700">
                 ${
                     (item.type!=='pair') 
                         ? item.item["Περιγραφή"]
@@ -100,9 +111,9 @@ let mailBody = (order, recipient) => {
     `});
 
     body += /*html*/`
-        </tbody></table>
-        Σύνολο προϊόντων: ${countItems(order.cart)} <br>
-    `;
+            </tbody></table>
+            Σύνολο προϊόντων: ${countItems(order.cart)} <br>
+        </body></html>`;
 
     return body;
 
@@ -117,7 +128,7 @@ let sendMail = (order, recipient) => {
         from: process.env.MAILFROM,
         to: process.env.MAILTO,
         subject: 'Παραγγελία: ' + order.id ,
-        // text: "Δημιουργήθηκε νέα παραγγελία",
+        text: 'Παραγγελία: ' + order.id,
         html: mailBody(order, recipient),
     };
 
@@ -126,7 +137,7 @@ let sendMail = (order, recipient) => {
             console.log(error);
             return;
         }
-        console.log('Message sent: %s', info.messageId);
+        console.log('Στάλθηκε e-mail: %s', info.messageId);
     });
 
 };

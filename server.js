@@ -5,9 +5,9 @@
 
 ///////////////////////////////////         DEPENDENCIES         /////////////////////////////////////
 
-
-// Set up Express server and env variables
-require('dotenv').config();
+// load env variables. Call this just once (not in every file) but before the dependencies!
+require('dotenv').config();     
+// Set up Express server
 const express = require('express');
 const server = express();
 var cors = require('cors');
@@ -168,7 +168,7 @@ server.get('/api/validatemail/:token/:email', validateToken, (req,res) => {
 
 server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {
     // check if e-mail exists in custormers' emails list and return customer
-    res.json(Data.customers.find(customer => customer['email']==req.params.email)??null);
+    res.json(Data.customers.find(customer => customer['email']==req.params.email));
 });
 
 

@@ -4,7 +4,7 @@
 
 
 ///////////////////////////////////          DEPENDENCIES          ////////////////////////////////////
-require('dotenv').config();
+// require('dotenv').config();
 const axios = require('axios');
 let { uniqueOf, treeOf } = require('./utilities.js');
 
