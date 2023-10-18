@@ -54,8 +54,9 @@ router.post(['/'], validateFirebaseToken, (req,res) => {
     console.log(`Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) μόλις δημιούργησε νέα παραγγελία με κωδικό ${order.id}`);
     // console.log(JSON.stringify(order));
     
-    // sendMail(order,'shop');    // do not await
-    res.send(mailBody(order,'shop'));       // shop , customer
+    sendMail(order,'customer');    // do not await these
+    setTimeout(_=>{sendMail(order,'shop')},4000);        // do not await these
+    res.send(mailBody(order,'customer'));       // shop , customer
 });
 
 

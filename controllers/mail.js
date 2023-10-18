@@ -1,6 +1,9 @@
 "use strict";
 const nodemailer = require("nodemailer");
+const sendGridMail = require('@sendgrid/mail');
+sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 // require('dotenv').config();
+
 
 // INITIALIZE MAIL TRANSPORTER
 let transporter = nodemailer.createTransport({
@@ -14,11 +17,11 @@ let transporter = nodemailer.createTransport({
     tls: {
         rejectUnauthorized: false,
     },
-  });
+});
 
 
-  
-/** The body of the email that will be sent */
+
+/** The body of the email that will be sent. Recipient = 'eshop' or 'customer' */
 let mailBody = (order, recipient) => {
 
     let typeGR = function(type=null){
@@ -58,7 +61,7 @@ let mailBody = (order, recipient) => {
 
         <body>
 
-        ${ (recipient=="customer") ? `<h1>Ευχαριστούμε για την Παραγγελία!</h1>` : ``}
+        ${ (recipient=="customer") ? `<h1>Σας ευχαριστούμε για την Παραγγελία!</h1>` : ``}
 
         <h2>Στοιχεία παραγγελίας</h2>
         Κωδικός παραγγελίας: ${order.id} <br>
@@ -121,23 +124,35 @@ let mailBody = (order, recipient) => {
 
 
 
-
+/** Send Email. Recipient = 'eshop' or 'customer' */
 let sendMail = (order, recipient) => {
+
+    let recipientEmail = (recipient=='customer') ? order.customer['email'] : process.env.MAILTO;
 
     let mailOptions = {
         from: process.env.MAILFROM,
-        to: process.env.MAILTO,
+        to: recipientEmail,
         subject: 'Παραγγελία: ' + order.id ,
         text: 'Παραγγελία: ' + order.id,
         html: mailBody(order, recipient),
     };
 
+    // send email with nodemailer
+    /*
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.log(error);
             return;
         }
         console.log('Στάλθηκε e-mail: %s', info.messageId);
+    });
+    */
+
+    // send email with sendgrid
+    sendGridMail.send(mailOptions).then((response) => {
+        console.log(`Στάλθηκε e-mail σε ${recipientEmail} για παραγγελία ${order.id}`);
+    }).catch((error) => {
+        console.error(error);
     });
 
 };

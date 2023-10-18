@@ -34,7 +34,7 @@ let {validateToken, cacheResponse} = require('./controllers/middleware.js');
 
 // Other variables
 let environment = process.env.ENVIRONMENT;
-let initialIntervalInSeconds = process.env.INITIALINTERVAL??40;    // in seconds
+let initialIntervalInSeconds = process.env.INITIALINTERVAL??30;    // in seconds
 
 // let trian.gr use the API
 server.use(cors({
