@@ -30,12 +30,13 @@ let validateFirebaseToken = async (req, res, next) => {
         // console.log(user);
         customer = Data.customers.find( customer=>customer['email']==user.email )??null;
         // console.log(customer);
-        if (customer['Ενεργός']!=='1') {throw new Error(`Customer ${user.email} is inactive`);}
+        if (customer?.['Ενεργός']!=='1') {throw new Error(`Customer ${user.email} is inactive`);}
     } catch(e) {
         console.error(e.message);
         customer = null;
     }
     if (!customer) {    // customer not found (token invalid/missing )
+        console.error('Unauthorized request');        
         res.status(401).send('Unauthorized');
         res.end();
     } else {
@@ -54,8 +55,11 @@ router.post(['/'], validateFirebaseToken, (req,res) => {
     console.log(`Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) μόλις δημιούργησε νέα παραγγελία με κωδικό ${order.id}`);
     // console.log(JSON.stringify(order));
     
+    // Send Emails
     sendMail(order,'customer');    // do not await these
     setTimeout(_=>{sendMail(order,'shop')},4000);        // do not await these
+
+    // Respond to client (browser)
     res.send(mailBody(order,'customer'));       // shop , customer
 });
 

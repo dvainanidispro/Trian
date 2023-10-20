@@ -34,6 +34,43 @@ let mailBody = (order, recipient) => {
          return gr[type];
     };
 
+    let prescriptionTable = (cartItem) => /*html*/`
+        <table style="text-align:center">
+            <thead><tr>
+                <th width="50"></th>
+                <th width="50">SPH</th>
+                <th width="50">CYL</th>
+                <th width="50">AXIS</th>
+            </tr></thead>
+            <tbody>
+                <tr>
+                    <!-- Το <p> χρειάζεται για να εμφανίζεται σωστά στο Outlook -->
+                    <td ><p>R</p></td>
+                    <td >${cartItem.item.R['SPH']}</td>
+                    <td >${cartItem.item.R['CYL']}</td>
+                    <td >${cartItem.item.R['Axis']}</td>
+                </tr>
+                <tr>
+                    <td><p>L</p></td>
+                    <td>${cartItem.item.L['SPH']}</td>
+                    <td>${cartItem.item.L['CYL']}</td>
+                    <td>${cartItem.item.L['Axis']}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Πελάτης: ${cartItem.item.retail}</p>
+    `;
+
+    // Sort the "cart" array based on the "type" property. Ζευγάρι φακών, Φακοί, Σκελετοί μαζί. 
+    order.cart.sort((a, b) => {
+        if (a.type < b.type) {
+        return 1;
+        } else if (a.type > b.type) {
+        return -1;
+        }
+        return 0;
+    });
+
     let countItems = function(cart){
         let count = 0;
         cart.forEach(item => {
@@ -77,37 +114,38 @@ let mailBody = (order, recipient) => {
         <h2> Προϊόντα παραγγελίας</h2>
         <table>
             <thead><tr>
-                <th style="text-align:left" >Τύπος</th><th>Ποσότητα</th><th>Κωδικός</th><th>Περιγραφή</th>
+            <th>Ποσότητα</th><th>Περιγραφή</th><th>Συνταγή</th><th>Κωδικός</th><th style="text-align:left" >Τύπος</th>
             </tr></thead>
-            <tbody>
+            <tbody> 
     `;
 
 
     order.cart.forEach(item => {body+= /*html*/` 
         <tr>
-            <td style="text-align:left" >
-                ${typeGR(item.type)}
-            </td>
             <td style="text-align:center" >
-                ${item.quantity}
+                ${(item.type!=='pair') ? item.quantity : '2x'+item.quantity}
             </td>
+            <td style="font-weight:700">
+                ${
+                        (item.type!=='pair') 
+                            ? item.item["Περιγραφή"]
+                            : "R: "+item.item.R["Περιγραφή"]
+                            +'<br>'
+                            +"L: "+item.item.L["Περιγραφή"]
+                    }
+            </td>
+            <td>${(item.type=='pair') ? prescriptionTable(item) : ''}</td>
             <td>
                 ${
                     (item.type!=='pair') 
                         ? item.item["Κωδικός"]
-                        : "R: "+item.item.R["Κωδικός"]
-                            +'<br>'
-                            +"L: "+item.item.L["Κωδικός"]
+                        :   "R: " + item.item.R["Κωδικός"]
+                          + '<br>'
+                          + "L: " + item.item.L["Κωδικός"]
                 }
             </td>
-            <td style="font-weight:700">
-                ${
-                    (item.type!=='pair') 
-                        ? item.item["Περιγραφή"]
-                        : "R: "+item.item.R["Περιγραφή"]
-                            +'<br>'
-                            +"L: "+item.item.L["Περιγραφή"]
-                }
+            <td style="text-align:left" >
+                ${typeGR(item.type)}
             </td>
         </tr>
         
@@ -148,13 +186,14 @@ let sendMail = (order, recipient) => {
     });
     */
 
-    // send email with sendgrid
+    // send email with sendgrid 
+    
     sendGridMail.send(mailOptions).then((response) => {
         console.log(`Στάλθηκε e-mail σε ${recipientEmail} για παραγγελία ${order.id}`);
     }).catch((error) => {
         console.error(error);
     });
-
+    
 };
 
 module.exports = {sendMail, mailBody};
