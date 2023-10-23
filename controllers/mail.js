@@ -87,7 +87,7 @@ let mailBody = (order, recipient) => {
         <head>
 
                 <style>
-                    table, th, td { border:1px solid black; border-collapse: collapse; padding: 8px; line-height: 1.6; }
+                    table, th, td { border:1px solid black; border-collapse: collapse; padding: 8px; line-height: 1.6; font-size: 14px; }
                     /* th:first-child, td:first-child { text-align:left; }
                     td:nth-child(2) { text-align:center; }
                     td:nth-child(4) { font-weight:700; }*/
@@ -114,7 +114,7 @@ let mailBody = (order, recipient) => {
         <h2> Προϊόντα παραγγελίας</h2>
         <table>
             <thead><tr>
-            <th>Ποσότητα</th><th>Περιγραφή</th><th>Συνταγή</th><th>Κωδικός</th><th style="text-align:left" >Τύπος</th>
+            <th>Τμχ</th><th>Περιγραφή</th><th>Συνταγή</th><th>Κωδικός</th><th style="text-align:left" >Τύπος</th>
             </tr></thead>
             <tbody> 
     `;
