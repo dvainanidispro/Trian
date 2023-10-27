@@ -64,6 +64,10 @@ router.post(['/'], validateFirebaseToken, (req,res) => {
 });
 
 
+router.get(['/profile','/customer','/me'], validateFirebaseToken, (req,res) => {
+    res.json(req.customer);
+});
+
 
 
 ///////////////////////////////////         EXPORTS         /////////////////////////////////////

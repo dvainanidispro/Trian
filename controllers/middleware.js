@@ -7,7 +7,7 @@
 let firebaseToken = process.env.FIREBASETOKEN;
 let userToken = process.env.USERTOKEN;
 
-/** Validate Token. Can't use server.use... */
+/** Validate Token when it is in the URL. Can't use server.use... */
 exports.validateToken = (req,res,next) => {
     if ([firebaseToken,userToken].includes(req.params.token)) {     // validate token
         next();

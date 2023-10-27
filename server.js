@@ -76,7 +76,14 @@ setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
 
 
 server.get('/',(req,res)=>{
-    res.send('TRIAN API');
+    res.send('TRIAN.GR API');
+});
+
+
+//////////////////////////////////////        PROFILE         ////////////////////////////////////////
+
+server.get('/api/profile', (req,res) => {
+    res.redirect('/api/order/profile');
 });
 
 
