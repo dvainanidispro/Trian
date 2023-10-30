@@ -23,12 +23,12 @@ router.get(['/lens/tokai','/lens/tokai.json'], cacheResponse, (req,res) => {
 });
 
 
-router.get(['/lens/trian','/lens/trian-alt.json'], cacheResponse, (req,res) => {
+router.get(['/lens/trian-alt','/lens/trian-alt.json'], cacheResponse, (req,res) => {
     res.json(PublicData.treeOfLensTrianAlt);
 });
 
 
-router.get(['/lens/tokai','/lens/tokai-alt.json'], cacheResponse, (req,res) => {
+router.get(['/lens/tokai-alt','/lens/tokai-alt.json'], cacheResponse, (req,res) => {
     res.json(PublicData.treeOfLensTokaiAlt);
 });
 

@@ -30,13 +30,14 @@ router.post('/lens/tokai', (req,res) => {
 });
 
 
+/*
 // Get request with body a json object that is the filter
 router.post('/frames/', (req,res) => {
     let frames = PublicData.frames;
     let filter = req.body;
     res.json(multiFilter(frames,filter,filterLimit));
 });
-
+*/
 
 ///////////////////////////////////         EXPORTS         /////////////////////////////////////
 

@@ -17,7 +17,7 @@ exports.prettyJSON = Obj => /*html*/`
 //////////////////////////      UniqueOf
 
 /** 
- * Recieves an array of objects with similar properties and returns an object, 
+ * Recieves an array of objects, all with same properties, and returns an object, 
  * the properties of which are arrays of unique values found in the input array's objects 
 */
 exports.uniqueOf = (arrayOfObjects, arrayOfKeys=null) => {

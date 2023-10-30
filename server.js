@@ -95,10 +95,8 @@ server.get(['/api/frames','/api/frames.json'], cacheResponse, (req,res) => {
     res.json(PublicData.frames);
 });
 
-// server.get('/api/lens', (req,res) => {
-//     res.json(PublicData.lens);
-// });
 
+/*
 server.get(['/api/lens/tokai','/api/lens/tokai.json'], cacheResponse, (req,res) => {
     res.json(PublicData.lensTokai);
 });
@@ -107,6 +105,9 @@ server.get(['/api/lens/trian','/api/lens/trian.json'], cacheResponse, (req,res) 
     res.json(PublicData.lensTrian);
 });
 
+// server.get('/api/lens', (req,res) => {
+//     res.json(PublicData.lens);
+// });
 
 server.get(['/api/unique/frames','/api/unique/frames.json'], cacheResponse, (req,res) => {
     res.json(PublicData.uniqueOfFrames);
@@ -124,6 +125,7 @@ server.get(['/api/unique/lens-tokai','/api/unique/lens-tokai.json'], cacheRespon
     res.json(PublicData.uniqueOfLensTokai);
 });
 
+*/
 
 
 ////////////////////////////////        REALTIME "SHOW" ROUTES         //////////////////////////////////
@@ -139,14 +141,14 @@ const filterRouter = require('./routes/filter.js');
 server.use('/api/filter', filterRouter);
 
 
-////////////////////////////////             TREE ROUTES             //////////////////////////////////
+////////////////////////////////            LENS TREE ROUTES           //////////////////////////////////
 
 const treeRouter = require('./routes/tree.js');
 server.use('/api/tree', treeRouter);
 
 
 
-////////////////////////////////             ORDER ROUTES             //////////////////////////////////
+////////////////////////////////              ORDER ROUTES            //////////////////////////////////
 
 const orderRouter = require('./routes/order.js');
 server.use('/api/order', orderRouter);
@@ -168,10 +170,12 @@ server.get('/api/all/:token/lens', validateToken, async (req,res) => {
     res.json(Data.lens);
 });
 
+/*
 server.get('/api/validatemail/:token/:email', validateToken, (req,res) => {
     // check if e-mail exists in custormers' emails list
     res.send(Data.customerEmails.includes(req.params.email));      // returns just true or false  
 });
+*/
 
 server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {
     // check if e-mail exists in custormers' emails list and return customer
