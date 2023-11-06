@@ -160,7 +160,7 @@ let mailBody = (order, recipient) => {
             <p>Σύνολο προϊόντων: ${countItems(order.cart)} </p>
 
             <h2> Παρατηρήσεις:</h2>
-            <p>${order.notes ?? "hello"}</p>
+            <p>${order.notes || "-"}</p>
         </body></html>`;
 
     
