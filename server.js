@@ -76,8 +76,18 @@ setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
 
 
 server.get('/',(req,res)=>{
-    res.send('TRIAN.GR API');
+    res.send(`
+    <img src="/trian.png">
+    `);
 });
+
+server.get('/trian.png', cors(), (req,res) => {
+    res.sendFile(__dirname+'/public/trian.png');
+});
+server.get('/trian-logo.png', (req,res) => {
+    res.sendFile(__dirname+'/public/trian.png');
+});
+
 
 
 //////////////////////////////////////        PROFILE         ////////////////////////////////////////
