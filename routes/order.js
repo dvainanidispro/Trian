@@ -19,6 +19,12 @@ let auth = admin.auth();
 /** Returns a random unique id for a new order. Includes the current day and 3 random digits at the end (use 1 if <99!) */
 let orderId = () => (new Date()).toISOString().split('T')[0] + "-" + String(Math.floor(Math.random() * 1000)).padStart(3,'1')
 
+/** Καταγράφει το email που υποστηρίζει ο πελάτης ότι έχει. Για λόγους troubleshooting, αν πχ το token δεν λειτουργήσει σωστά. */ 
+let consoleLogUser = (req,res,next) => {
+    console.log(`Λήψη παραγγελίας από ${req.body.customerEmail}`);
+    next();
+};
+
 
 /** Validate Firebase Token and return user object */
 let validateFirebaseToken = async (req, res, next) => {
@@ -30,7 +36,7 @@ let validateFirebaseToken = async (req, res, next) => {
         // console.log(user);
         customer = Data.customers.find( customer=>customer['email']==user.email )??null;
         // console.log(customer);
-        if (customer?.['Ενεργός']!=='1') {throw new Error(`Customer ${user.email} is inactive`);}
+        if (customer?.['Ενεργός']!=='1') {throw new Error(`Ο χρήστης ${user.email} έχει διαγραφτεί ή είναι ανενεργός.`);}
     } catch(e) {
         console.error(e.message);
         customer = null;
@@ -46,12 +52,16 @@ let validateFirebaseToken = async (req, res, next) => {
     }
 };
 
+
+
+
 // ORDER ROUTE
-router.post(['/'], validateFirebaseToken, (req,res) => {
+router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     let order = {};
     order.id = orderId();
     order.customer = req.customer;
     order.cart = req.body.cart;
+    order.notes = req.body.notes;
     console.log(`Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) μόλις δημιούργησε νέα παραγγελία με κωδικό ${order.id}`);
     // console.log(JSON.stringify(order));
     
@@ -63,7 +73,7 @@ router.post(['/'], validateFirebaseToken, (req,res) => {
     res.send(mailBody(order,'customer'));       // shop , customer
 });
 
-
+// PROFILE ROUTE
 router.get(['/profile','/customer','/me'], validateFirebaseToken, (req,res) => {
     res.json(req.customer);
 });

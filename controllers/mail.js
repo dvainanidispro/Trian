@@ -58,7 +58,7 @@ let mailBody = (order, recipient) => {
                 </tr>
             </tbody>
         </table>
-        <p>Πελάτης: ${cartItem.item.retail}</p>
+        <p>Πελάτης: <br>${cartItem.item.retail}</p>
     `;
 
     // Sort the "cart" array based on the "type" property. Ζευγάρι φακών, Φακοί, Σκελετοί μαζί. 
@@ -98,7 +98,11 @@ let mailBody = (order, recipient) => {
 
         <body>
 
-        ${ (recipient=="customer") ? `<h1>Σας ευχαριστούμε για την Παραγγελία!</h1>` : ``}
+        ${ (recipient=="customer") ? `
+            <img src="https://api.trian.gr/trian.png" title="trian logo" alt="trian logo" />
+            <h1>Σας ευχαριστούμε για την Παραγγελία!</h1>
+            <br>
+        ` : ''}
 
         <h2>Στοιχεία παραγγελίας</h2>
         Κωδικός παραγγελίας: ${order.id} <br>
@@ -111,7 +115,7 @@ let mailBody = (order, recipient) => {
         Διεύθυνση: ${order.customer['Διεύθυνση']}, ${order.customer['Τ.Κ.']}, ${order.customer['Πόλη']} <br>
         <br><br>
 
-        <h2> Προϊόντα παραγγελίας</h2>
+        <h2>Προϊόντα παραγγελίας</h2>
         <table>
             <thead><tr>
             <th>Τμχ</th><th>Περιγραφή</th><th>Συνταγή</th><th>Κωδικός</th><th style="text-align:left" >Τύπος</th>
@@ -153,8 +157,13 @@ let mailBody = (order, recipient) => {
 
     body += /*html*/`
             </tbody></table>
-            Σύνολο προϊόντων: ${countItems(order.cart)} <br>
+            <p>Σύνολο προϊόντων: ${countItems(order.cart)} </p>
+
+            <h2> Παρατηρήσεις:</h2>
+            <p>${order.notes ?? "hello"}</p>
         </body></html>`;
+
+    
 
     return body;
 
