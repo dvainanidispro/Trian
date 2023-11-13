@@ -106,7 +106,7 @@ server.get(['/api/frames','/api/frames.json'], cacheResponse, (req,res) => {
 });
 
 
-/*
+
 server.get(['/api/lens/tokai','/api/lens/tokai.json'], cacheResponse, (req,res) => {
     res.json(PublicData.lensTokai);
 });
@@ -114,6 +114,8 @@ server.get(['/api/lens/tokai','/api/lens/tokai.json'], cacheResponse, (req,res) 
 server.get(['/api/lens/trian','/api/lens/trian.json'], cacheResponse, (req,res) => {
     res.json(PublicData.lensTrian);
 });
+
+/*
 
 // server.get('/api/lens', (req,res) => {
 //     res.json(PublicData.lens);

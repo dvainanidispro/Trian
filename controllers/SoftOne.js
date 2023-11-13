@@ -7,6 +7,7 @@
 // require('dotenv').config();
 const axios = require('axios');
 let { uniqueOf, treeOf } = require('./utilities.js');
+let { sendErrorLoadingEmail } = require('./errorloading.js');
 
 
 
@@ -106,6 +107,7 @@ SoftOne.customers = async function() {
         console.log(`Έγκυρα e-mail πελατών: ${Data.customerEmails.length} `);
     }catch(error){
         console.error("Error loading customers from SoftOne");
+        sendErrorLoadingEmail();
     }
     // run every this hours
     setTimeout(SoftOne.customers,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
@@ -130,6 +132,7 @@ SoftOne.frames = async function(){
                 "Μάρκα": frame['Μάρκα'],
                 "Χρώμα": frame['Χρώμα'],
                 "Μοντέλο": frame['Μοντέλο'],
+                "Παράδοση": frame['Παράδοση'],
             }
         });
         PublicData.uniqueOfFrames = uniqueOf(PublicData.frames,["Κατασκευαστής","Μάρκα","Χρώμα","Μοντέλο"]);
@@ -149,19 +152,20 @@ SoftOne.lens = async function(){
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} φακοί`);
 
-        PublicData.lens = lens.map(frame => {
+        PublicData.lens = lens.map(len => {
             return {
-                "Κωδικός": frame['Κωδικός'],
-                "Περιγραφή": frame['Περιγραφή'],
-                "Κατασκευαστής": frame['Κατασκευαστής'], // not needed, only for testing
-                "Σφαίρωμα": frame['Σφαίρωμα'],
-                "Κύλινδρος": frame['Κύλινδρος'],
-                "Σφαίρωμα2": frame['Σφαίρωμα2'],
-                "Κύλινδρος2": frame['Κύλινδρος2'],
-                "Διάθλ": frame['Δείκτης Διάθλ.'],
-                "Επίστρωση": frame['Επίστρωση'],
-                "Υλικό": frame['Υλικό'],
-                "Διάμετρος": frame['Διάμετρος'],
+                "Κωδικός": len['Κωδικός'],
+                "Περιγραφή": len['Περιγραφή'],
+                "Κατασκευαστής": len['Κατασκευαστής'], // not needed, only for testing
+                "Σφαίρωμα": len['Σφαίρωμα'],
+                "Κύλινδρος": len['Κύλινδρος'],
+                "Σφαίρωμα2": len['Σφαίρωμα2'],
+                "Κύλινδρος2": len['Κύλινδρος2'],
+                "Διάθλ": len['Δείκτης Διάθλ.'],
+                "Επίστρωση": len['Επίστρωση'],
+                "Υλικό": len['Υλικό'],
+                "Διάμετρος": len['Διάμετρος'],
+                "Παράδοση": len['Παράδοση'],
             };
         });
         PublicData.lensTokai = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TOKAI");
