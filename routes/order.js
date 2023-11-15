@@ -67,7 +67,7 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     
     // Send Emails
     sendMail(order,'customer');    // do not await these
-    setTimeout(_=>{sendMail(order,'shop')},4000);        // do not await these
+    setTimeout(_=>{sendMail(order,'shop')},5000);        // do not await these
 
     // Respond to client (browser)
     res.send(mailBody(order,'customer'));       // shop , customer

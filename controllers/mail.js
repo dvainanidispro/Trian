@@ -61,6 +61,11 @@ let mailBody = (order, recipient) => {
         <p>Πελάτης: <br>${cartItem.item.retail}</p>
     `;
 
+    let maxDelivery = (deliveryValuesArray) => {
+        let deliveryOrder = ["ΕΤΟΙΜΟΠΑΡΑΔΟΤΟΣ","48 ΩΡΕΣ","7-8 ΕΡΓΑΣΙΜΕΣ","10-12 ΕΡΓΑΣΙΜΕΣ"];
+        return deliveryValuesArray.sort( (a,b) => deliveryOrder.indexOf(a)-deliveryOrder.indexOf(b)).pop();
+    };
+
     // Sort the "cart" array based on the "type" property. Ζευγάρι φακών, Φακοί, Σκελετοί μαζί. 
     order.cart.sort((a, b) => {
         if (a.type < b.type) {
@@ -118,7 +123,7 @@ let mailBody = (order, recipient) => {
         <h2>Προϊόντα παραγγελίας</h2>
         <table>
             <thead><tr>
-            <th>Τμχ</th><th>Περιγραφή</th><th>Συνταγή</th><th>Κωδικός</th><th style="text-align:left" >Τύπος</th>
+            <th>Τμχ</th><th>Περιγραφή</th><th>Παράδοση</th><th>Συνταγή</th><th>Κωδικός</th><th style="text-align:left" >Τύπος</th>
             </tr></thead>
             <tbody> 
     `;
@@ -134,10 +139,11 @@ let mailBody = (order, recipient) => {
                         (item.type!=='pair') 
                             ? item.item["Περιγραφή"]
                             : "R: "+item.item.R["Περιγραφή"]
-                            +'<br>'
-                            +"L: "+item.item.L["Περιγραφή"]
+                                +'<br>'
+                                +"L: "+item.item.L["Περιγραφή"]
                     }
             </td>
+            <td>${(item.type=='pair') ? maxDelivery([item.item.R["Παράδοση"],item.item.L["Παράδοση"]]) : item.item["Παράδοση"]}</td>
             <td>${(item.type=='pair') ? prescriptionTable(item) : ''}</td>
             <td>
                 ${
