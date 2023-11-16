@@ -110,7 +110,7 @@ SoftOne.customers = async function() {
         sendErrorLoadingEmail();
     }
     // run every this hours
-    setTimeout(SoftOne.customers,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
+    // setTimeout(SoftOne.customers,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
 };
 
 
@@ -139,7 +139,7 @@ SoftOne.frames = async function(){
     }catch(error){
         console.error("Error loading frames from SoftOne");
     }
-    setTimeout(SoftOne.frames,1000*60*60*refreshIntervalInHours);         // refresh list every this hours
+    // setTimeout(SoftOne.frames,1000*60*60*refreshIntervalInHours);         // refresh list every this hours
 };
 
 
@@ -189,7 +189,7 @@ SoftOne.lens = async function(){
         console.error("Error loading lens from SoftOne");
     }
     // run every this hours
-    setTimeout(SoftOne.lens,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
+    // setTimeout(SoftOne.lens,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
 };
 
 

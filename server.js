@@ -35,6 +35,15 @@ let {validateToken, cacheResponse} = require('./controllers/middleware.js');
 // Other variables
 let environment = process.env.ENVIRONMENT;
 let initialIntervalInSeconds = process.env.INITIALINTERVAL??30;    // in seconds
+let refreshIntervalInHours = process.env.REFRESHINTERVAL??24;   // in hours
+
+let delay = async function(sec) {
+    return new Promise((resolve,reject) => {
+        setTimeout(() => {
+            resolve();
+        },sec*1000);
+    });
+} 
 
 // let trian.gr use the API
 server.use(cors({
@@ -49,9 +58,26 @@ server.use(cors({
 
 
 //* fetch Customers, then Frames, then Lens, in intervals
-setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
-setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
-setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
+let fetchEverythingFromSoftOne = async function(once=false) {
+    await delay(initialIntervalInSeconds);
+    SoftOne.customers();
+    if (!once) {setInterval(SoftOne.customers,1000*60*60*refreshIntervalInHours)}
+    await delay(initialIntervalInSeconds);
+    SoftOne.frames();
+    if (!once) {setInterval(SoftOne.frames,1000*60*60*refreshIntervalInHours)}
+    await delay(initialIntervalInSeconds);
+    SoftOne.lens();
+    if (!once) {setInterval(SoftOne.lens,1000*60*60*refreshIntervalInHours)}
+
+    // setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
+    // setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
+    // setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
+
+
+
+}
+fetchEverythingFromSoftOne();
+
 
 // SoftOne.customers();
 // SoftOne.frames();
@@ -194,7 +220,12 @@ server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {
     res.json(Data.customers.find(customer => customer['email']==req.params.email));
 });
 
-
+server.get('/api/update/:token', validateToken, (req,res) => {
+    console.log('Ζητήθηκε χειροκίνητα ανανέωση πελατών και πελατών');
+    // fetch everything from SoftOne and update Data
+    fetchEverythingFromSoftOne(true);   // once=true
+    res.send('Λήφθηκε εντολή για ενημέρωση πελατών και προϊόντων. Η ενημέρωση θα ολοκληρωθεί στα επόμενα λεπτά.');
+});
 
 
 
