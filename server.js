@@ -36,6 +36,8 @@ let {validateToken, cacheResponse} = require('./controllers/middleware.js');
 let environment = process.env.ENVIRONMENT;
 let initialIntervalInSeconds = process.env.INITIALINTERVAL??30;    // in seconds
 let refreshIntervalInHours = process.env.REFRESHINTERVAL??24;   // in hours
+/** When this is true, an update is being performed, so no other update can be done simultaneously */
+let updatingNow = false;    // to prevent multiple simultaneous updates from SoftOne
 
 let delay = async function(sec) {
     return new Promise((resolve,reject) => {
@@ -59,7 +61,10 @@ server.use(cors({
 
 //* fetch Customers, then Frames, then Lens, in intervals
 let fetchEverythingFromSoftOne = async function(once=false) {
+    if (updatingNow) {return} 
+    updatingNow = true;    // prevent multiple simultaneous updates from SoftOne
     await delay(initialIntervalInSeconds);
+    console.log("Έναρξη λήψης πελατών και προϊόντων από το SoftOne");
     SoftOne.customers();
     if (!once) {setInterval(SoftOne.customers,1000*60*60*refreshIntervalInHours)}
     await delay(initialIntervalInSeconds);
@@ -68,6 +73,9 @@ let fetchEverythingFromSoftOne = async function(once=false) {
     await delay(initialIntervalInSeconds);
     SoftOne.lens();
     if (!once) {setInterval(SoftOne.lens,1000*60*60*refreshIntervalInHours)}
+    await delay(initialIntervalInSeconds);
+    updatingNow = false;
+    console.log("Η ενημέρωση πελατών και προϊόντων ολοκληρώθηκε");
 
     // setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
     // setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
@@ -221,7 +229,11 @@ server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {
 });
 
 server.get('/api/update/:token', validateToken, (req,res) => {
-    console.log('Ζητήθηκε χειροκίνητα ανανέωση πελατών και πελατών');
+    if (updatingNow) {
+        res.send('Μια ενημέρωση πελατών και προϊόντων βρίσκεται ήδη σε εξέλιξη. Παρακαλώ περιμένετε.');
+        return;
+    }
+    console.log('Ζητήθηκε χειροκίνητα ανανέωση πελατών και προϊόντων');
     // fetch everything from SoftOne and update Data
     fetchEverythingFromSoftOne(true);   // once=true
     res.send('Λήφθηκε εντολή για ενημέρωση πελατών και προϊόντων. Η ενημέρωση θα ολοκληρωθεί στα επόμενα λεπτά.');
