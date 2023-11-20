@@ -38,6 +38,8 @@ let initialIntervalInSeconds = process.env.INITIALINTERVAL??30;    // in seconds
 let refreshIntervalInHours = process.env.REFRESHINTERVAL??24;   // in hours
 /** When this is true, an update is being performed, so no other update can be done simultaneously */
 let updatingNow = false;    // to prevent multiple simultaneous updates from SoftOne
+/** When this gets true, the service is ready for use */
+let dataOK = false;
 
 let delay = async function(sec) {
     return new Promise((resolve,reject) => {
@@ -75,7 +77,8 @@ let fetchEverythingFromSoftOne = async function(once=false) {
     if (!once) {setInterval(SoftOne.lens,1000*60*60*refreshIntervalInHours)}
     await delay(initialIntervalInSeconds);
     updatingNow = false;
-    console.log("Η ενημέρωση πελατών και προϊόντων ολοκληρώθηκε");
+    dataOK = true;
+    console.log("Η υπηρεσία είναι έτοιμη");
 
     // setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
     // setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
@@ -85,7 +88,6 @@ let fetchEverythingFromSoftOne = async function(once=false) {
 
 }
 fetchEverythingFromSoftOne();
-
 
 // SoftOne.customers();
 // SoftOne.frames();
@@ -118,9 +120,20 @@ server.get('/',(req,res)=>{
 server.get('/trian.png', cors(), (req,res) => {
     res.sendFile(__dirname+'/public/trian.png');
 });
-server.get('/trian-logo.png', (req,res) => {
-    res.sendFile(__dirname+'/public/trian.png');
+
+server.get('/favicon.ico', cors(), (req,res) => {
+    res.sendFile(__dirname+'/public/favicon.ico');
 });
+
+
+// healthcheck for deployment. When this returns 200, the service is ready, and the traffic is switched to this deployment
+server.get('/health', (req,res) => {
+    if (!dataOK) { 
+        res.status(503).send('Η υπηρεσία βρίσκεται σε στάδιο εκκίνισης. Παρακαλώ περιμένετε.'); 
+        return;
+    }
+    res.send('Η υπηρεσία είναι έτοιμη για χρήση');
+}); 
 
 
 
