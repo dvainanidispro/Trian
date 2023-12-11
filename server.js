@@ -32,6 +32,9 @@ let {SoftOne, PublicData, Data} = require('./controllers/SoftOne.js');
 // Middleware
 let {validateToken, cacheResponse} = require('./controllers/middleware.js');
 
+// Firebase
+const {validateFirebaseToken} = require('./controllers/firebase.js');
+
 // Other variables
 let environment = process.env.ENVIRONMENT;
 let initialIntervalInSeconds = process.env.INITIALINTERVAL??30;    // in seconds
@@ -77,8 +80,12 @@ let fetchEverythingFromSoftOne = async function(once=false) {
     if (!once) {setInterval(SoftOne.lens,1000*60*60*refreshIntervalInHours)}
     await delay(initialIntervalInSeconds);
     updatingNow = false;
-    dataOK = true;
-    console.log("Η υπηρεσία είναι έτοιμη");
+    dataOK = Data.customers.length>0;   // Data is OK, if we have customers, from this or previous fetch.
+    if (dataOK) {
+        console.log("Η υπηρεσία είναι έτοιμη");
+    } else {
+        console.error("Η υπηρεσία δεν είναι έτοιμη. To deployment απέτυχε!");
+    }
 
     // setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
     // setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
@@ -139,8 +146,8 @@ server.get('/health', (req,res) => {
 
 //////////////////////////////////////        PROFILE         ////////////////////////////////////////
 
-server.get('/api/profile', (req,res) => {
-    res.redirect('/api/order/profile');
+server.get(['/api/profile','/profile'], validateFirebaseToken, (req,res) => {
+    res.json(req.customer);
 });
 
 
@@ -248,7 +255,7 @@ server.get('/api/update/:token', validateToken, (req,res) => {
     }
     console.log('Ζητήθηκε χειροκίνητα ανανέωση πελατών και προϊόντων');
     // fetch everything from SoftOne and update Data
-    fetchEverythingFromSoftOne(true);   // once=true
+    fetchEverythingFromSoftOne(true);   // once=true, δηλαδή MHN βάλεις setInterval
     res.send('Λήφθηκε εντολή για ενημέρωση πελατών και προϊόντων. Η ενημέρωση θα ολοκληρωθεί στα επόμενα λεπτά.');
 });
 

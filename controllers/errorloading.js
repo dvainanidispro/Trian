@@ -4,6 +4,7 @@ sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
 let sendErrorLoadingEmail = () => {
+    if (process.env.ENVIRONMENT=="DEVELOPMENT") {return}
 
     sendGridMail.send({
         to: (process.env.ENVIRONMENT=="DEVELOPMENT") ? process.env.ADMINMAIL : [process.env.ADMINMAIL, process.env.MAILTO],
