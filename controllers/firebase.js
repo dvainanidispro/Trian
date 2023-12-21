@@ -15,9 +15,12 @@ let auth = admin.auth();
 /** Validate Firebase Token and return user object in req.customer */
 let validateFirebaseToken = async (req, res, next) => {
     let customer = null;
+    let token = null
     try{
-        let token = req.headers.authentication.split(' ')[1];
+        token = req.headers.authentication ? req.headers.authentication?.split(' ')[1] : null;
         // console.log(token);
+        // χωρίς token στην παραγγελία, είναι req.headers.authentication=='Bearer undefined' διότι έχει ρυθμιστεί να στέλνεται. 
+        if (!token || token=="undefined") {console.log('No token provided')}
         let user = await auth.verifyIdToken(token);
         // console.log(user);
         customer = Data.customers.find( customer=>customer['email']==user.email )??null;

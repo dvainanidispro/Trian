@@ -34,8 +34,8 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     
     // Send Emails
     if (process.env.ENVIRONMENT!=="DEVELOPMENT"){
-        sendMail(order,'customer');    // do not await these
-        setTimeout(_=>{sendMail(order,'shop')},5000);        // do not await these
+        sendMail(order,'shop');                                     // do not await these
+        setTimeout(_=>{sendMail(order,'customer')},2000);           // do not await these
     }
     // Respond to client (browser)
     res.send(mailBody(order,'customer'));       // shop , customer
