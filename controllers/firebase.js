@@ -17,9 +17,11 @@ let validateFirebaseToken = async (req, res, next) => {
     let customer = null;
     let token = null
     try{
-        token = req.headers.authentication ? req.headers.authentication?.split(' ')[1] : null;
+        token = req.headers.authentication ? req.headers.authentication?.split(' ')[1] 
+            : req.headers.authorization ? req.headers.authorization?.split(' ')[1] 
+            : null;
         // console.log(token);
-        // χωρίς token στην παραγγελία, είναι req.headers.authentication=='Bearer undefined' διότι έχει ρυθμιστεί να στέλνεται. 
+        // χωρίς token στην παραγγελία, είναι req.headers.auth=='Bearer undefined' διότι έχει ρυθμιστεί να στέλνεται. 
         if (!token || token=="undefined") {console.log('No token provided')}
         let user = await auth.verifyIdToken(token);
         // console.log(user);
