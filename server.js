@@ -244,8 +244,8 @@ server.get('/api/validatemail/:token/:email', validateToken, (req,res) => {
 */
 
 server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {
-    // check if e-mail exists in custormers' emails list and return customer
-    res.json(Data.customers.find(customer => customer['email']==req.params.email));
+    // check if e-mail exists in custormers' emails list and return customer or null
+    res.json( Data.customers.find(customer => customer['email']==req.params.email) ?? null );
 });
 
 server.get('/api/update/:token', validateToken, (req,res) => {
