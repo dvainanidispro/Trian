@@ -27,7 +27,7 @@ server.use(express.json());
 ///////////////////////////////         VARIABLES & FUNCTIONS         ////////////////////////////////
 
 // SoftOneData
-let {SoftOne, PublicData, Data} = require('./controllers/SoftOne.js');
+let {SoftOne, PublicData, Data, getCustomer} = require('./controllers/SoftOne.js');
 
 // Middleware
 let {validateToken, cacheResponse} = require('./controllers/middleware.js');
@@ -90,8 +90,6 @@ let fetchEverythingFromSoftOne = async function(once=false) {
     // setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
     // setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
     // setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
-
-
 
 }
 fetchEverythingFromSoftOne();
@@ -236,16 +234,9 @@ server.get('/api/all/:token/lens', validateToken, async (req,res) => {
     res.json(Data.lens);
 });
 
-/*
-server.get('/api/validatemail/:token/:email', validateToken, (req,res) => {
-    // check if e-mail exists in custormers' emails list
-    res.send(Data.customerEmails.includes(req.params.email));      // returns just true or false  
-});
-*/
 
-server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {
-    // check if e-mail exists in custormers' emails list and return customer or null
-    res.json( Data.customers.find(customer => customer['email']==req.params.email) ?? null );
+server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {         
+    res.json( getCustomer(req.params.email) );
 });
 
 server.get('/api/update/:token', validateToken, (req,res) => {

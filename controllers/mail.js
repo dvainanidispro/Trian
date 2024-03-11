@@ -1,23 +1,22 @@
 "use strict";
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
 const sendGridMail = require('@sendgrid/mail');
 sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
-// require('dotenv').config();
 
 
 // INITIALIZE MAIL TRANSPORTER
-let transporter = nodemailer.createTransport({
-    host: process.env.MAILHOST,
-    port: process.env.MAILPORT,
-    secure: false,
-    auth: {
-      user: process.env.MAILUSER,
-      pass: process.env.MAILPASS,
-    },
-    tls: {
-        rejectUnauthorized: false,
-    },
-});
+// let transporter = nodemailer.createTransport({
+//     host: process.env.MAILHOST,
+//     port: process.env.MAILPORT,
+//     secure: false,
+//     auth: {
+//       user: process.env.MAILUSER,
+//       pass: process.env.MAILPASS,
+//     },
+//     tls: {
+//         rejectUnauthorized: false,
+//     },
+// });
 
 
 

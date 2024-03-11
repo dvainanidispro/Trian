@@ -194,10 +194,40 @@ SoftOne.lens = async function(){
 
 
 
+/** Returns a customer object (or null), given their email */
+let getCustomer = (email) => {
+    let store = null;
+
+    // 1. Ψάξε για υποκατάστημα με αυτό το email. 
+    // Είναι υποκατάστημα αν έχει διαφορετικό email από το email του κύριου καταστήματος
+    let brunch = Data.customers.find( customer=>customer['Email Υπ/τος']==email && customer['email']!=customer['Email Υπ/τος'] ) ?? null; 
+    if (brunch) {
+        brunch['email']=brunch['Email Υπ/τος'];
+        brunch['Πόλη']=brunch['Πόλη Υπ/τος'];
+        brunch['Διεύθυνση']=brunch['Διεύθυνση Υπ/τος'];
+        brunch['ΤΚ']=brunch['ΤΚ Υπ/τος'];
+        brunch['Τηλέφωνο']=brunch['Τηλέφωνο Υπ/τος'];
+        store = brunch;
+    }
+
+    // 2. Ψάξε για κύριο κατάστημα με αυτό το email, αν δεν βρέθηκε υποκατάστημα
+    store = store ?? Data.customers.find( customer=>customer['email']==email ) ?? null;
+    if (!store) {return null}
+
+    // 3. Διάγραψε όλα τα keys που περιέχουν 'Υπ/τος', διότι είναι άχρηστα.
+    let keys = Object.keys(store);
+    keys.forEach(key => {
+        if ( key.includes('Υπ/τος') ) { delete store[key] }
+    });
+    return store;
+
+};
+
+
 
 
 
 
 ///////////////////////////////////         EXPORTS         /////////////////////////////////////
 
-module.exports = {SoftOne, PublicData, Data};
+module.exports = {SoftOne, PublicData, Data, getCustomer};

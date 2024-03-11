@@ -1,7 +1,7 @@
 'use strict';
 
 // Dependencies
-const {Data} = require('../controllers/SoftOne.js');
+const {getCustomer} = require('../controllers/SoftOne.js');
 
 // Firebase dependencies
 var admin = require("firebase-admin");
@@ -20,10 +20,10 @@ let validateFirebaseToken = async (req, res, next) => {
         token = req.headers.authentication ? req.headers.authentication?.split(' ')[1] 
             : req.headers.authorization ? req.headers.authorization?.split(' ')[1] 
             : null;
-        // χωρίς token στην παραγγελία, είναι req.headers.auth=='Bearer undefined' διότι έχει ρυθμιστεί να στέλνεται. 
+        // χωρίς token στην παραγγελία, είναι req.headers.auth=='Bearer undefined' διότι το header έχει ρυθμιστεί να στέλνεται πάντα. 
         if (!token || token=="undefined") {console.log('No token provided')}
         let user = await auth.verifyIdToken(token);
-        customer = Data.customers.find( customer=>customer['email']==user.email ) ?? null;
+        customer = getCustomer(user.email);          //customer object or null
         // if (customer?.['Ενεργός']!=='1') {throw new Error(`Ο χρήστης ${user.email} έχει διαγραφτεί ή είναι ανενεργός.`);}
         if (!customer) {throw new Error(`Ο χρήστης ${user.email} έχει διαγραφτεί ή είναι ανενεργός.`);}
     } catch(e) {
