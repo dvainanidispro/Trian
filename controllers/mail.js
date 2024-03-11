@@ -115,8 +115,8 @@ let mailBody = (order, recipient) => {
         
         <h2>Στοιχεία πελάτη</h2>
         Επωνυμία: ${order.customer['Επωνυμία']} <br>
-        ΑΦΜ: ${order.customer['Α.Φ.Μ.']} <br>
-        Διεύθυνση: ${order.customer['Διεύθυνση']}, ${order.customer['Τ.Κ.']}, ${order.customer['Πόλη']} <br>
+        ΑΦΜ: ${order.customer['ΑΦΜ']} <br>
+        Διεύθυνση: ${order.customer['Διεύθυνση']}, ${order.customer['ΤΚ']}, ${order.customer['Πόλη']} <br>
         <br><br>
 
         <h2>Προϊόντα παραγγελίας</h2>
