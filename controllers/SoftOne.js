@@ -145,6 +145,19 @@ SoftOne.frames = async function(){
                 "Παράδοση": frame['Παράδοση'],
             }
         });
+        DataForCustomers.frames = frames.map(frame => {
+            return {
+                "Κωδικός": frame['Κωδικός'],
+                "Περιγραφή": frame['Περιγραφή'],
+                "Κατασκευαστής": frame['Κατασκευαστής'],
+                "Μάρκα": frame['Μάρκα'],
+                "Χρώμα": frame['Χρώμα'],
+                "Μοντέλο": frame['Μοντέλο'],
+                "Παράδοση": frame['Παράδοση'],
+                "Τιμή": frame['Χονδρικής'],
+            }
+        });
+
         PublicData.uniqueOfFrames = uniqueOf(PublicData.frames,["Κατασκευαστής","Μάρκα","Χρώμα","Μοντέλο"]);
     }catch(error){
         console.error("Error loading frames from SoftOne");
@@ -176,11 +189,32 @@ SoftOne.lens = async function(){
                 "Υλικό": len['Υλικό'],
                 "Διάμετρος": len['Διάμετρος'],
                 "Παράδοση": len['Παράδοση'],
-                "ΤιμΚατ": len['ΤιμολογιακήΚατηγορία']
+                "ΤιμΚατ": len['ΤιμολογιακήΚατηγορία'],
             };
         });
+        DataForCustomers.lens = lens.map(len => {
+            return {
+                "Κωδικός": len['Κωδικός'],
+                "Περιγραφή": len['Περιγραφή'],
+                "Κατασκευαστής": len['Κατασκευαστής'], // not needed, only for testing
+                "Σφαίρωμα": len['Σφαίρωμα'],
+                "Κύλινδρος": len['Κύλινδρος'],
+                "Σφαίρωμα2": len['Σφαίρωμα2'],
+                "Κύλινδρος2": len['Κύλινδρος2'],
+                "Διάθλ": len['ΔείκτηςΔιάθλ']??len['Δείκτης Διάθλ.'],        //TODO: κράτα μόνο το σωστό
+                "Επίστρωση": len['Επίστρωση'],
+                "Υλικό": len['Υλικό'],
+                "Διάμετρος": len['Διάμετρος'],
+                "Παράδοση": len['Παράδοση'],
+                "ΤιμΚατ": len['ΤιμολογιακήΚατηγορία'],
+                "Τιμή": len['Χονδρικής'],
+            };
+        });
+
         PublicData.lensTokai = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TOKAI");
         PublicData.lensTrian = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN");
+        DataForCustomers.lensTokai = DataForCustomers.lens.filter(lens => lens['Κατασκευαστής']=="TOKAI");
+        DataForCustomers.lensTrian = DataForCustomers.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN");
 
         let lensAttributes = ['Κατασκευαστής','Σφαίρωμα','Κύλινδρος','Διάθλ','Επίστρωση','Υλικό','Διάμετρος'];
         PublicData.uniqueOfLens = uniqueOf(PublicData.lens,lensAttributes);
@@ -241,4 +275,4 @@ let getCustomer = (email) => {
 
 ///////////////////////////////////         EXPORTS         /////////////////////////////////////
 
-module.exports = {SoftOne, PublicData, Data, getCustomer};
+module.exports = {SoftOne, Data, PublicData, DataForCustomers, getCustomer};

@@ -18,20 +18,20 @@ let filterLimit = process.env.FILTERLIMIT??1000;
 
 
 router.post('/lens/trian', firebaseUser, (req,res) => {
-    let lens = PublicData.lensTrian;
+    let lens = req.customer ? DataForCustomers.lensTrian : PublicData.lensTrian;
     let filter = req.body;
     res.json(multiFilter(lens,filter,filterLimit));
 });
 
 router.post('/lens/tokai', firebaseUser, (req,res) => {
-    let lens = PublicData.lensTokai;
+    let lens = req.customer ? DataForCustomers.lensTokai : PublicData.lensTokai;
     let filter = req.body;
     res.json(multiFilter(lens,filter,filterLimit));
 });
 
 
 router.post('/frames', firebaseUser, (req,res) => {  // This route does not implement a filter Object
-    let frames = PublicData.frames;
+    let frames = req.customer ? DataForCustomers.frames : PublicData.frames;
     res.json(frames);
 });
 

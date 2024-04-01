@@ -27,7 +27,7 @@ server.use(express.json());
 ///////////////////////////////         VARIABLES & FUNCTIONS         ////////////////////////////////
 
 // SoftOneData
-let {SoftOne, PublicData, Data, getCustomer} = require('./controllers/SoftOne.js');
+let {SoftOne, Data, PublicData, DataForCustomers, getCustomer} = require('./controllers/SoftOne.js');
 
 // Middleware
 let {validateToken, cacheResponse} = require('./controllers/middleware.js');
@@ -150,27 +150,25 @@ server.get(['/api/profile','/profile'], validateFirebaseToken, (req,res) => {
 
 
 
-////////////////////////////////      PUBLIC API ROUTES FOR E-SHOP      ///////////////////////////////////
+////////////////////////////////      API ROUTES FOR TESTING      ///////////////////////////////////
 
-//TOFIX: remove thsese
 
+/*
 server.get(['/api/frames','/api/frames.json'], cacheResponse, (req,res) => {
-    res.json(PublicData.frames);
+    res.json(DataForCustomers.frames);
 });
 
 server.get(['/api/lens/tokai','/api/lens/tokai.json'], cacheResponse, (req,res) => {
-    res.json(PublicData.lensTokai);
+    res.json(DataForCustomers.lensTokai);
 });
 
 server.get(['/api/lens/trian','/api/lens/trian.json'], cacheResponse, (req,res) => {
-    res.json(PublicData.lensTrian);
+    res.json(DataForCustomers.lensTrian);
 });
 
-/*
-
-// server.get('/api/lens', (req,res) => {
-//     res.json(PublicData.lens);
-// });
+server.get('/api/lens', (req,res) => {
+    res.json(PublicData.lens);
+});
 
 server.get(['/api/unique/frames','/api/unique/frames.json'], cacheResponse, (req,res) => {
     res.json(PublicData.uniqueOfFrames);
