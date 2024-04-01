@@ -152,12 +152,11 @@ server.get(['/api/profile','/profile'], validateFirebaseToken, (req,res) => {
 
 ////////////////////////////////      PUBLIC API ROUTES FOR E-SHOP      ///////////////////////////////////
 
+//TOFIX: remove thsese
 
 server.get(['/api/frames','/api/frames.json'], cacheResponse, (req,res) => {
     res.json(PublicData.frames);
 });
-
-
 
 server.get(['/api/lens/tokai','/api/lens/tokai.json'], cacheResponse, (req,res) => {
     res.json(PublicData.lensTokai);

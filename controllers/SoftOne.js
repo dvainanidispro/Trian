@@ -26,7 +26,7 @@ let appId = (process.env.APPID).toString();
 let SoftOne = {};
 
 
-/** The object that holds all stored data */
+/** The object that holds all stored data. Used only for System or Administrator use */
 let Data = {
     customers: [],
     lens: [],
@@ -35,7 +35,7 @@ let Data = {
 };
 
 
-/** The objects that holds the publicly available data */
+/** The object that holds the publicly available data */
 let PublicData = {
     lens: [],
     lensTokai: [],
@@ -50,6 +50,15 @@ let PublicData = {
     treeOfLensTrianAlt: {},
     treeOfLensTokaiAlt: {},
 };
+
+
+/** The object that holds the data that is available for authorized customers */
+let DataForCustomers = {
+    lens: [],
+    lensTokai: [],
+    lensTrian: [],
+    frames: [],
+}
 
 
 
@@ -124,6 +133,7 @@ SoftOne.frames = async function(){
         Data.frames = frames;
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} σκελετοί`);
+
         PublicData.frames = frames.map(frame => {
             return {
                 "Κωδικός": frame['Κωδικός'],
@@ -161,11 +171,12 @@ SoftOne.lens = async function(){
                 "Κύλινδρος": len['Κύλινδρος'],
                 "Σφαίρωμα2": len['Σφαίρωμα2'],
                 "Κύλινδρος2": len['Κύλινδρος2'],
-                "Διάθλ": len['Δείκτης Διάθλ.'],
+                "Διάθλ": len['ΔείκτηςΔιάθλ']??len['Δείκτης Διάθλ.'],        //TODO: κράτα μόνο το σωστό
                 "Επίστρωση": len['Επίστρωση'],
                 "Υλικό": len['Υλικό'],
                 "Διάμετρος": len['Διάμετρος'],
                 "Παράδοση": len['Παράδοση'],
+                "ΤιμΚατ": len['ΤιμολογιακήΚατηγορία']
             };
         });
         PublicData.lensTokai = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TOKAI");
