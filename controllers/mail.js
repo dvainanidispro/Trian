@@ -83,6 +83,13 @@ let mailBody = (order, recipient) => {
         return count;
     }
 
+    /** Converts a number to euro format */
+    const euro = (price) => (new Intl.NumberFormat('el-GR', {
+        style: 'currency',
+        currency: 'EUR',
+        maximumFractionDigits: 2,
+    })).format(price);
+
     let body = /*html*/`
 
         <!doctype html>
@@ -110,7 +117,12 @@ let mailBody = (order, recipient) => {
 
         <h2>Στοιχεία παραγγελίας</h2>
         Κωδικός παραγγελίας: ${order.id} <br>
-        Ημερομηνία παραγγελίας: ${(new Date()).toLocaleDateString('el-GR')}
+        Ημερομηνία παραγγελίας: ${(new Date()).toLocaleDateString('el-GR')} <br>
+        Πλήθος προϊόντων: ${countItems(order.cart)} <br>
+        Αξία προϊόντων: ${euro(order.costs.cart)} <br>
+        Αντικαταβολή: ${order.costs.cod?"Ναι":"Όχι"} <br>
+        Έξοδα αποστολής: ${euro(order.costs.shipping)} <br>
+        <b>Σύνολο παραγγελίας: ${euro(order.costs.total)} + Φ.Π.Α.</b>
         <br><br>
         
         <h2>Στοιχεία πελάτη</h2>
@@ -162,7 +174,6 @@ let mailBody = (order, recipient) => {
 
     body += /*html*/`
             </tbody></table>
-            <p>Σύνολο προϊόντων: ${countItems(order.cart)} </p>
 
             <h2> Παρατηρήσεις:</h2>
             <p>${order.notes || "-"}</p>

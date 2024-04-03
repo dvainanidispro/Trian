@@ -29,6 +29,7 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     order.customer = req.customer;
     order.cart = req.body.cart;
     order.notes = req.body.notes;
+    order.costs = req.body.costs;
     console.log(`Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) μόλις δημιούργησε νέα παραγγελία με κωδικό ${order.id}`);
     // console.log(JSON.stringify(order));
     
@@ -38,7 +39,8 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
         setTimeout(_=>{sendMail(order,'customer')},2000);           // do not await these
     }
     // Respond to client (browser)
-    res.send(mailBody(order,'customer'));       // shop , customer
+    // res.send(mailBody(order,'customer'));       // shop , customer
+    res.json(order);
 });
 
 // PROFILE ROUTE
