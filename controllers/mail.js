@@ -134,7 +134,7 @@ let mailBody = (order, recipient) => {
         <h2>Προϊόντα παραγγελίας</h2>
         <table>
             <thead><tr>
-            <th>Τμχ</th><th>Περιγραφή</th><th>Παράδοση</th><th>Συνταγή</th><th>Κωδικός</th><th style="text-align:left" >Τύπος</th>
+            <th>Τμχ</th><th>Περιγραφή</th><th>Παράδοση</th><th>Συνταγή</th><th>Κωδικός</th><th>Τύπος</th><th>Τιμή</th>
             </tr></thead>
             <tbody> 
     `;
@@ -165,8 +165,11 @@ let mailBody = (order, recipient) => {
                           + "L: " + item.item.L["Κωδικός"]
                 }
             </td>
-            <td style="text-align:left" >
+            <td style="text-align:center" >
                 ${typeGR(item.type)}
+            </td>
+            <td style="text-align:center" >
+                ${item.quantity} x ${euro(item.item['Τιμή'])}
             </td>
         </tr>
         
