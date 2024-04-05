@@ -30,6 +30,7 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     order.cart = req.body.cart;
     order.notes = req.body.notes;
     order.costs = req.body.costs;
+    order.test = req.body.test;
     console.log(`Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) μόλις δημιούργησε νέα παραγγελία με κωδικό ${order.id}`);
     // console.log(JSON.stringify(order));
     

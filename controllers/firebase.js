@@ -28,7 +28,7 @@ let validateFirebaseToken = async (req, res, next) => {
         console.error(e.message);
     }
     if (!customer) {    // customer not found (token invalid/missing)
-        console.error('Unauthorized request');        
+        console.error(`Unauthorized request on request route: ${req.originalUrl}`);        
         res.status(401).send('Unauthorized');
         res.end();
     } else {    // customer found
@@ -38,17 +38,18 @@ let validateFirebaseToken = async (req, res, next) => {
 };
 
 
-/** Check for Firebase User and return user object in req.customer. If customer does not exist, req.customer will be null */
+/** Check for Firebase User and return user object in req.customer. If customer does not exist (guest user), req.customer will be null */
 let firebaseUser = async  (req, res, next) => {
     let token = req.headers.authorization ? req.headers.authorization?.split(' ')[1] : null;
     if (!token || token=="undefined") {
-        console.log("no token!")
         req.customer = null;
     } else {
-        // try{
+        try{
             let user = await auth.verifyIdToken(token);     // user object or error (promise rejected)
-            req.customer = getCustomer(user.email);         //customer object or null
-        // } catch(e) {}   
+            req.customer = getCustomer(user.email);         // customer object or null
+        } catch(e) {
+            req.customer = null;
+        }   
     }
     next();
 };

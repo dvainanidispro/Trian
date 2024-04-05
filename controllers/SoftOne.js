@@ -259,7 +259,7 @@ let getCustomer = (email) => {
     store = store ?? Data.customers.find( customer=>customer['email']==email ) ?? null;
     if (!store) {return null}
 
-    // 3. Διάγραψε όλα τα keys που περιέχουν 'Υπ/τος', διότι είναι άχρηστα.
+    // 3. Είτε κατάστημα, είτε υποκατάστημα, διάγραψε όλα τα keys που περιέχουν 'Υπ/τος', διότι είναι άχρηστα.
     let keys = Object.keys(store);
     keys.forEach(key => {
         if ( key.includes('Υπ/τος') ) { delete store[key] }
