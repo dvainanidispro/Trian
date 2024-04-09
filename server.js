@@ -30,7 +30,7 @@ server.use(express.json());
 let {SoftOne, Data, PublicData, DataForCustomers, getCustomer} = require('./controllers/SoftOne.js');
 
 // Middleware
-let {validateToken, cacheResponse} = require('./controllers/middleware.js');
+let {validateToken, validateCart} = require('./controllers/validate.js');
 
 // Firebase
 const {validateFirebaseToken} = require('./controllers/firebase.js');
@@ -154,15 +154,15 @@ server.get(['/api/profile','/profile'], validateFirebaseToken, (req,res) => {
 
 
 /*
-server.get(['/api/frames','/api/frames.json'], cacheResponse, (req,res) => {
+server.get(['/api/frames','/api/frames.json'], (req,res) => {
     res.json(DataForCustomers.frames);
 });
 
-server.get(['/api/lens/tokai','/api/lens/tokai.json'], cacheResponse, (req,res) => {
+server.get(['/api/lens/tokai','/api/lens/tokai.json'], (req,res) => {
     res.json(DataForCustomers.lensTokai);
 });
 
-server.get(['/api/lens/trian','/api/lens/trian.json'], cacheResponse, (req,res) => {
+server.get(['/api/lens/trian','/api/lens/trian.json'], (req,res) => {
     res.json(DataForCustomers.lensTrian);
 });
 
@@ -170,19 +170,19 @@ server.get('/api/lens', (req,res) => {
     res.json(PublicData.lens);
 });
 
-server.get(['/api/unique/frames','/api/unique/frames.json'], cacheResponse, (req,res) => {
+server.get(['/api/unique/frames','/api/unique/frames.json'], (req,res) => {
     res.json(PublicData.uniqueOfFrames);
 });
 
-server.get(['/api/unique/lens','/api/unique/lens.json'], cacheResponse, (req,res) => {
+server.get(['/api/unique/lens','/api/unique/lens.json'], (req,res) => {
     res.json(PublicData.uniqueOfLens);
 });
 
-server.get(['/api/unique/lens-trian','/api/unique/lens-trian.json'], cacheResponse, (req,res) => {
+server.get(['/api/unique/lens-trian','/api/unique/lens-trian.json'], (req,res) => {
     res.json(PublicData.uniqueOfLensTrian);
 });
 
-server.get(['/api/unique/lens-tokai','/api/unique/lens-tokai.json'], cacheResponse, (req,res) => {
+server.get(['/api/unique/lens-tokai','/api/unique/lens-tokai.json'], (req,res) => {
     res.json(PublicData.uniqueOfLensTokai);
 });
 
@@ -208,13 +208,17 @@ const treeRouter = require('./routes/tree.js');
 server.use('/api/tree', treeRouter);
 
 
-
 ////////////////////////////////              ORDER ROUTES            //////////////////////////////////
 
 const orderRouter = require('./routes/order.js');
 server.use('/api/order', orderRouter);
 
 
+/////////////////////////////////            VALIDATE ROUTES          //////////////////////////////////
+
+server.post('/api/validate/cart', validateFirebaseToken, (req,res) => {
+    res.json(validateCart(req.body,req.customer));
+});
 
 
 //////////////////////////      PROTECTED API ROUTES FOR SYSTEM AND FIREBASE      //////////////////

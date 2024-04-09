@@ -15,6 +15,7 @@ let filterLimit = process.env.FILTERLIMIT??1000;
 ////////////////////////////////             FILTER ROUTES             //////////////////////////////////
 
 // Post requests having a JSON object as body. This JSON object is the filter
+//TODO: //# ΠΡΟΣΟΧΗ! Όταν φτιάξω τιμολογιακές κατηγορίες για τους πελάτες, να το φτιάξω και στο validate.js!!!
 
 
 router.post('/lens/trian', firebaseUser, (req,res) => {

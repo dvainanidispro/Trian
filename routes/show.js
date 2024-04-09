@@ -4,7 +4,7 @@
 ///////////////////////////////////          DEPENDENCIES          ////////////////////////////////////
 const router = require('express').Router();
 let {SoftOne} = require('../controllers/SoftOne.js');
-let {validateToken} = require('../controllers/middleware.js');
+let {validateToken} = require('../controllers/validate.js');
 let {prettyJSON} = require('../controllers/utilities.js');
 
 

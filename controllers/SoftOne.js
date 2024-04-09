@@ -26,7 +26,7 @@ let appId = (process.env.APPID).toString();
 let SoftOne = {};
 
 
-/** The object that holds all stored data. Used only for System or Administrator use */
+/** The object that holds all stored data. Only for System or Administrator use */
 let Data = {
     customers: [],
     lens: [],
@@ -35,7 +35,7 @@ let Data = {
 };
 
 
-/** The object that holds the publicly available data */
+/** The object that holds the publicly available data (for not-signed guests) */
 let PublicData = {
     lens: [],
     lensTokai: [],
@@ -59,7 +59,7 @@ let DataForCustomers = {
     lensTrian: [],
     frames: [],
 }
-
+// Μελλοντικά, θα αποθηκεύονται ανά τιμολογιακή κατηγορία πελάτη πχ frames['Κατ1'], frames['Κατ2'] κλπ
 
 
 
@@ -113,7 +113,7 @@ SoftOne.customers = async function() {
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} πελάτες`);
         Data.customerEmails = customers.map(customer => customer['email']).filter(email => email!="null" && email.includes("@"));
-        console.log(`Έγκυρα e-mail πελατών: ${Data.customerEmails.length} `);
+        // console.log(`Έγκυρα e-mail πελατών: ${Data.customerEmails.length} `);
     }catch(error){
         console.error("Error loading customers from SoftOne");
         sendErrorLoadingEmail();
