@@ -31,7 +31,7 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     order.notes = req.body.notes;
     order.costs = req.body.costs;
     order.test = req.body.test;
-    console.log(`Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) μόλις δημιούργησε νέα παραγγελία με κωδικό ${order.id}`);
+    console.log(`\x1b[36m Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) δημιούργησε νέα παραγγελία με κωδικό ${order.id} \x1b[0m`);
     // console.log(JSON.stringify(order));
     
     // Send Emails

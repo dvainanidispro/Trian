@@ -4,7 +4,7 @@
 ///////////////////////////////////          DEPENDENCIES          ////////////////////////////////////
 const router = require('express').Router();
 let {SoftOne} = require('../controllers/SoftOne.js');
-let {validateToken} = require('../controllers/validate.js');
+let {validateSystemToken} = require('../controllers/validate.js');
 let {prettyJSON} = require('../controllers/utilities.js');
 
 
@@ -12,7 +12,7 @@ let {prettyJSON} = require('../controllers/utilities.js');
 ////////////////////////////////        REALTIME "SHOW" ROUTES         //////////////////////////////////
 
 
-router.get('/:token/customers', validateToken, async (req,res) => {
+router.get('/:token/customers', validateSystemToken, async (req,res) => {
     let customersObj = await SoftOne.fetch('CustomerData',true);
     try{
         let customers = customersObj['rows'];  // τοπική μεταβλήτή, ώστε η global customers να μην αντικατασταθεί με μόνο 100 πελάτες 
@@ -25,7 +25,7 @@ router.get('/:token/customers', validateToken, async (req,res) => {
     }
 });
 
-router.get('/:token/frames', validateToken, async (req,res) => {
+router.get('/:token/frames', validateSystemToken, async (req,res) => {
     let dataObj = await SoftOne.fetch('ItemsData1',true);
     try{
         let data = dataObj['rows'];
@@ -35,7 +35,7 @@ router.get('/:token/frames', validateToken, async (req,res) => {
     }
 });
 
-router.get('/:token/lens', validateToken, async (req,res) => {
+router.get('/:token/lens', validateSystemToken, async (req,res) => {
     let dataObj = await SoftOne.fetch('ItemsData2',true);
     try{
         let data = dataObj['rows'];

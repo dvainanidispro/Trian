@@ -1,14 +1,14 @@
 'use strict';
 
 
-//////////////////////////      validateToken
+//////////////////////////      validateSystemToken
 
 // Tokens to validate
 let firebaseToken = process.env.FIREBASETOKEN;
 let userToken = process.env.USERTOKEN;
 
 /** Validate Token when it is in the URL. Can't use server.use... */
-let validateToken = (req,res,next) => {
+let validateSystemToken = (req,res,next) => {
     if ([firebaseToken,userToken].includes(req.params.token)) {     // validate token
         next();
         return;
@@ -23,7 +23,7 @@ let validateToken = (req,res,next) => {
 
 const {DataForCustomers} = require('../controllers/SoftOne.js');
 
-/** Λαμβάνει ένα Cart ως array από αντικείμενα (frames, lens, pair), διορθώνει τις τιμές τους, και το επιστρέφει διορθωμένο  */
+/** Λαμβάνει ένα Cart ως array από αντικείμενα (cartItems), διορθώνει τις τιμές τους, και το επιστρέφει διορθωμένο  */
 let validateCart = (cart,customer) =>{
     let validatedCart = cart.map(cartItem=>{
         if (cartItem.type==='frame') {
@@ -48,4 +48,4 @@ let validateCart = (cart,customer) =>{
 
 ///////////////////////////////////         EXPORTS         /////////////////////////////////////
 
-module.exports = { validateToken, validateCart };
+module.exports = { validateSystemToken, validateCart };

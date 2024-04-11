@@ -30,7 +30,7 @@ server.use(express.json());
 let {SoftOne, Data, PublicData, DataForCustomers, getCustomer} = require('./controllers/SoftOne.js');
 
 // Middleware
-let {validateToken, validateCart} = require('./controllers/validate.js');
+let {validateSystemToken, validateCart} = require('./controllers/validate.js');
 
 // Firebase
 const {validateFirebaseToken} = require('./controllers/firebase.js');
@@ -80,11 +80,11 @@ let fetchEverythingFromSoftOne = async function(once=false) {
     if (!once) {setInterval(SoftOne.lens,1000*60*60*refreshIntervalInHours)}
     await delay(initialIntervalInSeconds);
     updatingNow = false;
-    dataOK = Data.customers.length>0;   // Data is OK, if we have customers, from this or previous fetch.
+    dataOK = (Data.customers.length && Data.frames.length && Data.lens.length);   // Data is OK, if we have data from this or previous fetch.
     if (dataOK) {
-        console.log("Η υπηρεσία είναι έτοιμη");
+        console.log(`\x1b[32m Η υπηρεσία είναι έτοιμη! \x1b[0m`);
     } else {
-        console.error("Η υπηρεσία δεν είναι έτοιμη. To deployment απέτυχε!");
+        console.error(`\x1b[31m Η υπηρεσία δεν είναι έτοιμη. To deployment απέτυχε! \x1b[0m`);
     }
 
     // setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
@@ -223,24 +223,24 @@ server.post('/api/validate/cart', validateFirebaseToken, (req,res) => {
 
 //////////////////////////      PROTECTED API ROUTES FOR SYSTEM AND FIREBASE      //////////////////
 
-server.get('/api/all/:token/customers', validateToken, async (req,res) => {
+server.get('/api/all/:token/customers', validateSystemToken, async (req,res) => {
     res.json(Data.customers);
 });
 
-server.get('/api/all/:token/frames', validateToken, async (req,res) => {
+server.get('/api/all/:token/frames', validateSystemToken, async (req,res) => {
     res.json(Data.frames);
 });
 
-server.get('/api/all/:token/lens', validateToken, async (req,res) => {
+server.get('/api/all/:token/lens', validateSystemToken, async (req,res) => {
     res.json(Data.lens);
 });
 
 
-server.get('/api/validatecustomer/:token/:email', validateToken, (req,res) => {         
+server.get('/api/validatecustomer/:token/:email', validateSystemToken, (req,res) => {         
     res.json( getCustomer(req.params.email) );
 });
 
-server.get('/api/update/:token', validateToken, (req,res) => {
+server.get('/api/update/:token', validateSystemToken, (req,res) => {
     if (updatingNow) {
         res.send('Μια ενημέρωση πελατών και προϊόντων βρίσκεται ήδη σε εξέλιξη. Παρακαλώ περιμένετε.');
         return;
