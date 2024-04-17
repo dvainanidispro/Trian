@@ -252,6 +252,7 @@ let getCustomer = (email) => {
         brunch['Διεύθυνση']=brunch['Διεύθυνση Υπ/τος'];
         brunch['ΤΚ']=brunch['ΤΚ Υπ/τος'];
         brunch['Τηλέφωνο']=brunch['Τηλέφωνο Υπ/τος'];
+        brunch['Tρόπος αποστολής']=brunch['Τρόπος αποστολής Υπ/τος'];
         store = brunch;
     }
 
