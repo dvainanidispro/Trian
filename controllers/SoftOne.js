@@ -252,7 +252,6 @@ let getCustomer = (email) => {
         brunch['Διεύθυνση']=brunch['Διεύθυνση Υπ/τος'];
         brunch['ΤΚ']=brunch['ΤΚ Υπ/τος'];
         brunch['Τηλέφωνο']=brunch['Τηλέφωνο Υπ/τος'];
-        brunch['Tρόπος αποστολής']=brunch['Τρόπος αποστολής Υπ/τος'];
         store = brunch;
     }
 
@@ -260,7 +259,9 @@ let getCustomer = (email) => {
     store = store ?? Data.customers.find( customer=>customer['email']==email ) ?? null;
     if (!store) {return null}
 
-    // 3. Είτε κατάστημα, είτε υποκατάστημα, διάγραψε όλα τα keys που περιέχουν 'Υπ/τος', διότι είναι άχρηστα.
+    // 3. Είτε κατάστημα, είτε υποκατάστημα, συνεχίζουμε:
+    store['Tρόπος αποστολής'] = (store['Tρόπος αποστολής']!="0") ? store['Tρόπος αποστολής'] : store['Τρόπος αποστολής Υπ/τος'];
+    // Διάγραψε όλα τα keys που περιέχουν 'Υπ/τος', διότι είναι άχρηστα.
     let keys = Object.keys(store);
     keys.forEach(key => {
         if ( key.includes('Υπ/τος') ) { delete store[key] }
