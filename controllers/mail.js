@@ -116,20 +116,67 @@ let mailBody = (order, recipient) => {
         ` : ''}
 
         <h2>Στοιχεία παραγγελίας</h2>
-        Κωδικός παραγγελίας: ${order.id} <br>
-        Ημερομηνία παραγγελίας: ${(new Date()).toLocaleDateString('el-GR')} <br>
-        Πλήθος προϊόντων: ${countItems(order.cart)} <br>
-        Αξία προϊόντων: ${euro(order.costs.cart)} <br>
-        Αντικαταβολή: ${order.costs.cod?"Ναι":"Όχι"} <br>
-        Έξοδα αποστολής: ${euro(order.costs.shipping)} <br>
-        <b>Σύνολο παραγγελίας: ${euro(order.costs.total)} + Φ.Π.Α.</b>
-        <br><br>
+        <table>
+            <tr>
+                <td>Κωδικός παραγγελίας</td>
+                <td>${order.id}</td>
+            </tr>
+            <tr>
+                <td>Ημερομηνία παραγγελίας</td>
+                <td>${(new Date()).toLocaleDateString('el-GR')} </td>
+            </tr>
+            <tr>
+                <td>Πλήθος προϊόντων</td>
+                <td>${countItems(order.cart)}</td>
+            </tr>
+            <tr>
+                <td>Αξία προϊόντων</td>
+                <td> ${euro(order.costs.cart)}</td>
+            </tr>
+            <tr>
+                <td>Αντικαταβολή</td>
+                <td>${order.costs.cod?"Ναι":"Όχι"}</td>
+            </tr>
+            <tr>
+                <td>Έξοδα αποστολής</td>
+                <td>${euro(order.costs.shipping)}</td>
+            </tr>
+            <tr>
+                <td><b>Σύνολο παραγγελίας</b></td>
+                <td><b>${euro(order.costs.total)}</b></td>
+            </tr>
+            <tr>
+                <td>Φ.Π.Α. (${order.costs.vat*100}%)</td>
+                <td>${euro(order.costs.vat*order.costs.total)}</td>
+            </tr>
+            <tr>
+                <td><b>Σύνολο με Φ.Π.Α.</b></td>
+                <td><b>${euro(order.costs.totalWithVat)}</b></td>
+            </tr>
+
+        </table>
+
         
         <h2>Στοιχεία πελάτη</h2>
-        Επωνυμία: ${order.customer['Επωνυμία']} <br>
-        ΑΦΜ: ${order.customer['ΑΦΜ']} <br>
-        Διεύθυνση: ${order.customer['Διεύθυνση']}, ${order.customer['ΤΚ']}, ${order.customer['Πόλη']} <br>
-        <br><br>
+        <table>
+            <tr>
+                <td>Επωνυμία</td>
+                <td>${order.customer['Επωνυμία']}</td>
+            </tr>
+            <tr>
+                <td>ΑΦΜ</td>
+                <td>${order.customer['ΑΦΜ']}</td>
+            </tr>
+            <tr>
+                <td>Διεύθυνση</td>
+                <td>${order.customer['Διεύθυνση']}, ${order.customer['ΤΚ']}, ${order.customer['Πόλη']}</td>
+            </tr>
+            <tr>
+                <td>E-mail</td>
+                <td>${order.customer['email']}</td>
+            </tr>
+        </table>
+
 
         <h2>Προϊόντα παραγγελίας</h2>
         <table>
@@ -180,6 +227,7 @@ let mailBody = (order, recipient) => {
 
             <h2> Παρατηρήσεις:</h2>
             <p>${order.notes || "-"}</p>
+            <hr><br>
         </body></html>`;
 
     
