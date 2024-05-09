@@ -189,6 +189,7 @@ SoftOne.lens = async function(){
                 "Υλικό": len['Υλικό'],
                 "Διάμετρος": len['Διάμετρος'],
                 "Παράδοση": len['Παράδοση'],
+                "Χρώμα": len['Χρώμα'],
                 "ΤιμΚατ": len['ΤιμολογιακήΚατηγορία'],
             };
         });
@@ -206,6 +207,7 @@ SoftOne.lens = async function(){
                 "Υλικό": len['Υλικό'],
                 "Διάμετρος": len['Διάμετρος'],
                 "Παράδοση": len['Παράδοση'],
+                "Χρώμα": len['Χρώμα'],
                 "ΤιμΚατ": len['ΤιμολογιακήΚατηγορία'],
                 "Τιμή": len['Χονδρικής'],
             };
@@ -264,7 +266,6 @@ let getCustomer = (email) => {
     store.deliveryCost = (['ACS','SPEEDEX'].some(d=>store['Tρόπος αποστολής']?.includes(d))) ? 2.6 : 0;
     store.vat = (store['Λογ.Κατηγορία'].includes('Κανονικό Φ.Π.Α.')) ? 0.24 
         : (store['Λογ.Κατηγορία'].includes('Μειωμένο Φ.Π.Α.')) ? 0.17 : 0;
-    store.tax = store.vat;          // TODO: Να φύγει αυτό. 
     // Διάγραψε όλα τα keys που περιέχουν 'Υπ/τος', διότι είναι άχρηστα.
     let keys = Object.keys(store);
     keys.forEach(key => {
