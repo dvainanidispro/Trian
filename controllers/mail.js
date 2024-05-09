@@ -115,67 +115,78 @@ let mailBody = (order, recipient) => {
             <br>
         ` : ''}
 
-        <h2>Στοιχεία παραγγελίας</h2>
-        <table>
+        <table style="border:none">
             <tr>
-                <td>Κωδικός παραγγελίας</td>
-                <td>${order.id}</td>
+                <td style="vertical-align:top; border:none;">
+                                <h2 style="text-align:center">Στοιχεία πελάτη</h2>
+                                <table>
+                                    <tr>
+                                        <td>Επωνυμία</td>
+                                        <td>${order.customer['Επωνυμία']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ΑΦΜ</td>
+                                        <td>${order.customer['ΑΦΜ']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Διεύθυνση</td>
+                                        <td>${order.customer['Διεύθυνση']},<br>${order.customer['ΤΚ']}, ${order.customer['Πόλη']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>E-mail</td>
+                                        <td>${order.customer['email']}</td>
+                                    </tr>
+                                </table>
+                </td>
+                <td style="border:none">
+                                <h2 style="text-align:center">Στοιχεία παραγγελίας</h2>
+                                <table>
+                                    <tr>
+                                        <td>Κωδικός παραγγελίας</td>
+                                        <td>${order.id}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ημερομηνία παραγγελίας</td>
+                                        <td>${(new Date()).toLocaleDateString('el-GR')} </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Πλήθος προϊόντων</td>
+                                        <td>${countItems(order.cart)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Αξία προϊόντων</td>
+                                        <td> ${euro(order.costs.cart)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Αντικαταβολή</td>
+                                        <td>${order.costs.cod?"Ναι":"Όχι"}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Έξοδα αποστολής</td>
+                                        <td>${euro(order.costs.shipping)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Σύνολο παραγγελίας</b></td>
+                                        <td><b>${euro(order.costs.total)}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Φ.Π.Α. (${order.costs.vat*100}%)</td>
+                                        <td>${euro(order.costs.vat*order.costs.total)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Σύνολο με Φ.Π.Α.</b></td>
+                                        <td><b>${euro(order.costs.totalWithVat)}</b></td>
+                                    </tr>
+                        
+                                </table>
+                </td>
             </tr>
-            <tr>
-                <td>Ημερομηνία παραγγελίας</td>
-                <td>${(new Date()).toLocaleDateString('el-GR')} </td>
-            </tr>
-            <tr>
-                <td>Πλήθος προϊόντων</td>
-                <td>${countItems(order.cart)}</td>
-            </tr>
-            <tr>
-                <td>Αξία προϊόντων</td>
-                <td> ${euro(order.costs.cart)}</td>
-            </tr>
-            <tr>
-                <td>Αντικαταβολή</td>
-                <td>${order.costs.cod?"Ναι":"Όχι"}</td>
-            </tr>
-            <tr>
-                <td>Έξοδα αποστολής</td>
-                <td>${euro(order.costs.shipping)}</td>
-            </tr>
-            <tr>
-                <td><b>Σύνολο παραγγελίας</b></td>
-                <td><b>${euro(order.costs.total)}</b></td>
-            </tr>
-            <tr>
-                <td>Φ.Π.Α. (${order.costs.vat*100}%)</td>
-                <td>${euro(order.costs.vat*order.costs.total)}</td>
-            </tr>
-            <tr>
-                <td><b>Σύνολο με Φ.Π.Α.</b></td>
-                <td><b>${euro(order.costs.totalWithVat)}</b></td>
-            </tr>
-
         </table>
 
-        
-        <h2>Στοιχεία πελάτη</h2>
-        <table>
-            <tr>
-                <td>Επωνυμία</td>
-                <td>${order.customer['Επωνυμία']}</td>
-            </tr>
-            <tr>
-                <td>ΑΦΜ</td>
-                <td>${order.customer['ΑΦΜ']}</td>
-            </tr>
-            <tr>
-                <td>Διεύθυνση</td>
-                <td>${order.customer['Διεύθυνση']}, ${order.customer['ΤΚ']}, ${order.customer['Πόλη']}</td>
-            </tr>
-            <tr>
-                <td>E-mail</td>
-                <td>${order.customer['email']}</td>
-            </tr>
-        </table>
+
+
+
+
 
 
         <h2>Προϊόντα παραγγελίας</h2>
