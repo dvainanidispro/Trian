@@ -61,7 +61,7 @@ let multiFilter = (dataArray, filterObject, limit=null) => {
     // warning! do not change filterObject (because it is passed by reference)!
      let clearedFilter = {}; 
      for (const key in filterObject) {
-         if (filterObject[key]!==null && filterObject[key]!=="") { clearedFilter[key]=filterObject[key]};
+         if (filterObject[key]!=null && filterObject[key]!=="") { clearedFilter[key]=filterObject[key]};
      }
  
    // apply filter

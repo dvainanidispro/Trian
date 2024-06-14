@@ -30,7 +30,7 @@ server.use(express.json());
 let {SoftOne, Data, PublicData, DataForCustomers, getCustomer} = require('./controllers/SoftOne.js');
 
 // Middleware
-let {validateSystemToken, validateCart} = require('./controllers/validate.js');
+let {validateSystemToken, validate} = require('./controllers/validate.js');
 
 // Firebase
 const {validateFirebaseToken} = require('./controllers/firebase.js');
@@ -217,7 +217,7 @@ server.use('/api/order', orderRouter);
 /////////////////////////////////            VALIDATE ROUTES          //////////////////////////////////
 
 server.post('/api/validate/cart', validateFirebaseToken, (req,res) => {
-    res.json(validateCart(req.body,req.customer));
+    res.json(validate.cart(req.body,req.customer));
 });
 
 

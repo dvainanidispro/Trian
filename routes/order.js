@@ -5,6 +5,7 @@
 const router = require('express').Router();
 const {sendMail, mailBody} = require('../controllers/mail.js');
 const {validateFirebaseToken} = require('../controllers/firebase.js');
+const { validate } = require('../controllers/validate.js');
 
 
 ///////////////////////////////////          RECIEVE ORDER          ////////////////////////////////////
@@ -25,11 +26,12 @@ let consoleLogUser = (req,res,next) => {
 // ORDER ROUTE
 router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     let order = {};
-    order.id = orderId();
-    order.customer = req.customer;
-    order.cart = req.body.cart;
-    order.notes = req.body.notes;
-    order.costs = req.body.costs;
+    order.id = orderId();                               // new order id
+    order.customer = req.customer;                      // customer validation
+    order.cart = validate.cart(req.body.cart);          // cart validation
+    order.notes = req.body.notes;   
+    // To order.cart είναι validated. Το body.οτιδήποτε όχι!            
+    order.costs = validate.costs(req.body.costs, order.cart, req.customer);         // costs validation       
     order.test = req.body.test;
     console.log(`\x1b[36m Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) δημιούργησε νέα παραγγελία με κωδικό ${order.id} \x1b[0m`);
     // console.log(JSON.stringify(order));
