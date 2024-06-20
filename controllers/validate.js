@@ -59,6 +59,7 @@ validate.cart = (cart,customer=null) =>{
             if (lensL) { cartItem.item.L['Τιμή'] = lensL['Τιμή'] }
             // Επιπλέον χρέωση για ζευγάρια TRIAN:
             let cardPrice = (cartItem.item.L["Κατασκευαστής"]=="TRIAN" && cartItem.item.retail.length>1) ? costOf.card : 0;
+            cartItem.cardPrice = cardPrice;
             cartItem.item['Τιμή'] = euro( 
                 + parseFloat(cartItem.item.R['Τιμή']) 
                 + parseFloat(cartItem.item.L['Τιμή'])
