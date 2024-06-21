@@ -20,6 +20,8 @@ server.use(express.urlencoded({extended: false}));
 server.use(express.json());
 // server.use(express.static('public')); 
 
+const {db, dbTest} = require('./models/database.js');
+
 
 
 
@@ -92,7 +94,9 @@ let fetchEverythingFromSoftOne = async function(once=false) {
     // setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
 
 }
-fetchEverythingFromSoftOne();
+dbTest(db).then(_=>{
+    fetchEverythingFromSoftOne();
+});
 
 // SoftOne.customers();
 // SoftOne.frames();

@@ -5,9 +5,9 @@
 
 ///////////////////////////////////          DEPENDENCIES          ////////////////////////////////////
 // require('dotenv').config();
-const axios = require('axios');
-let { uniqueOf, treeOf } = require('./utilities.js');
-let { sendErrorLoadingEmail } = require('./errorloading.js');
+const axios                     = require('axios');
+let { uniqueOf, treeOf }        = require('./utilities.js');
+let { sendErrorLoadingEmail }   = require('./errorloading.js');
 
 
 

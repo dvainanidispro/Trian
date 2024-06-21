@@ -1,7 +1,7 @@
 'use strict';
 
 // Dependencies
-const {getCustomer} = require('../controllers/SoftOne.js');
+const { getCustomer } = require('../controllers/SoftOne.js');
 
 // Firebase dependencies
 var admin = require("firebase-admin");

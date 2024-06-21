@@ -2,10 +2,11 @@
 
 
 ///////////////////////////////////          DEPENDENCIES          ////////////////////////////////////
-const router = require('express').Router();
-const {sendMail, mailBody} = require('../controllers/mail.js');
-const {validateFirebaseToken} = require('../controllers/firebase.js');
-const { validate } = require('../controllers/validate.js');
+const router                        = require('express').Router();
+const { sendMail }                  = require('../controllers/mail.js');
+const { validateFirebaseToken }     = require('../controllers/firebase.js');
+const { validate }                  = require('../controllers/validate.js');
+const Order                         = require('../models/order.js');
 
 
 ///////////////////////////////////          RECIEVE ORDER          ////////////////////////////////////
@@ -15,7 +16,7 @@ let orderId = () => (new Date()).toISOString().split('T')[0] + "-" + String(Math
 
 /** Καταγράφει το email που υποστηρίζει ο πελάτης ότι έχει. Για λόγους troubleshooting, αν πχ το token δεν λειτουργήσει σωστά. */ 
 let consoleLogUser = (req,res,next) => {
-    console.log(`Λήψη παραγγελίας από ${req.body.customerEmail}`);
+    console.log(`Λήψη παραγγελίας από ${req.body.customerEmail}`); 
     next();
 };
 
@@ -25,6 +26,8 @@ let consoleLogUser = (req,res,next) => {
 
 // ORDER ROUTE
 router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
+
+    // Βήμα 1: Επικύρωση των δεδομένων της παραγγελίας
     let order = {};
     order.id = orderId();                               // new order id
     order.customer = req.customer;                      // customer validation
@@ -36,11 +39,27 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     console.log(`\x1b[36m Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) δημιούργησε νέα παραγγελία με κωδικό ${order.id} \x1b[0m`);
     // console.log(JSON.stringify(order));
     
-    // Send Emails
+    // Βήμα 2: Αποστολή email στο κατάστημα και στον πελάτη
     if (process.env.ENVIRONMENT!=="DEVELOPMENT"){
-        sendMail(order,'shop');                                     // do not await these
-        setTimeout(_=>{sendMail(order,'customer')},2000);           // do not await these
+        sendMail(order,'shop');                                     // do not await this
+        setTimeout(_=>{sendMail(order,'customer')},2000);           // do not await this
     }
+
+
+    // Βήμα 3: Καταχώριση της παραγγελίας στη βάση 
+    Order.create({                                                  // do not await this
+        orderId: order.id,
+        customer: order.customer.email,
+        cart: order.cart,
+        costs: order.costs,
+        notes: order.notes,
+        test: order.test 
+    }).then(_=>{
+        console.log(`Η παραγγελία ${order.id} καταχωρήθηκε στη βάση δεδομένων`);
+    });
+
+
+
     // Respond to client (browser)
     // res.send(mailBody(order,'customer'));       // shop , customer
     res.json(order);

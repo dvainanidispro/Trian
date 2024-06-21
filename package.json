@@ -18,6 +18,9 @@
         "express": "^4.18.2",
         "firebase-admin": "^11.11.0",
         "nodemailer": "^6.9.5",
-        "pretty-print-json": "^2.0.2"
+        "pg": "^8.12.0",
+        "pg-hstore": "^2.3.4",
+        "pretty-print-json": "^2.0.2",
+        "sequelize": "^6.37.3"
     }
 }

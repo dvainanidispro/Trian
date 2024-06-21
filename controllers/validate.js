@@ -36,7 +36,7 @@ let validateSystemToken = (req,res,next) => {
 
 ///////////////////////////        validate 
 
-const {DataForCustomers} = require('../controllers/SoftOne.js');
+const { DataForCustomers } = require('../controllers/SoftOne.js');
 
 let validate = {};
 
