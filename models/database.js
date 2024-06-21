@@ -4,13 +4,8 @@ const { Sequelize } = require('sequelize');
 
 /** The database connection using Sequelize */
 let db = new Sequelize(
-    process.env.DATABASENAME, 
-    process.env.DATABASEUSERNAME, 
-    process.env.DATABASEPASSWORD, 
+    process.env.DATABASESTRING, 
     {
-        host: process.env.DATABASEHOST,
-        dialect: process.env.DATABASEDIALECT,
-        port: process.env.DATABASEPORT,
         // dialectOptions: {
         //     encrypt: true
         //     decimalNumbers: true
