@@ -24,10 +24,11 @@ let consoleLogUser = (req,res,next) => {
 
 
 
-// ORDER ROUTE
+///////////////////////////////////           ORDER ROUTE          ///////////////////////////////////
+
 router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
 
-    // Βήμα 1: Επικύρωση των δεδομένων της παραγγελίας
+    //* Βήμα 1: Επικύρωση των δεδομένων της παραγγελίας
     let order = {};
     order.id = orderId();                               // new order id
     order.customer = req.customer;                      // customer validation
@@ -39,14 +40,14 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     console.log(`\x1b[36m Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) δημιούργησε νέα παραγγελία με κωδικό ${order.id} \x1b[0m`);
     // console.log(JSON.stringify(order));
     
-    // Βήμα 2: Αποστολή email στο κατάστημα και στον πελάτη
+    //* Βήμα 2: Αποστολή email στο κατάστημα και στον πελάτη
     if (process.env.ENVIRONMENT!=="DEVELOPMENT"){
         sendMail(order,'shop');                                     // do not await this
         setTimeout(_=>{sendMail(order,'customer')},2000);           // do not await this
     }
 
 
-    // Βήμα 3: Καταχώριση της παραγγελίας στη βάση 
+    //* Βήμα 3: Καταχώριση της παραγγελίας στη βάση 
     Order.create({                                                  // do not await this
         orderId: order.id,
         customer: order.customer.email,
@@ -59,7 +60,6 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     });
 
 
-
     // Respond to client (browser)
     // res.send(mailBody(order,'customer'));       // shop , customer
     res.json(order);
@@ -68,6 +68,16 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
 // PROFILE ROUTE
 router.get(['/profile','/customer','/me'], validateFirebaseToken, (req,res) => {
     res.json(req.customer);
+});
+
+
+
+/////////////////////////////////       ORDER HISTORY       /////////////////////////////////////
+
+router.get(['/history','/orders'], validateFirebaseToken, async (req,res) => {
+    const limit = 40;
+    let orders = await Order.findAll({ where: { customer: req.customer.email }, order: [['orderDate', 'DESC']], limit }).catch(err=>{console.error(err)});
+    res.json(orders);
 });
 
 

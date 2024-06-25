@@ -29,7 +29,7 @@ let dbTest = (DbConnection) => {
     return new Promise(async (resolve, reject) => {
         try{
             await DbConnection.authenticate();
-            console.log(`\x1b[32m Η σύνδεση με τη Βάση Δεδομένων ${process.env.DATABASEHOST}\\${process.env.DATABASENAME} (${process.env.DATABASEDIALECT}) είναι επιτυχής.\x1b[0m`);
+            console.log(`\x1b[32m Η σύνδεση με τη Βάση Δεδομένων είναι επιτυχής.\x1b[0m`);
             resolve();
         } catch (error) {
             console.error(`\x1b[31m Unable to connect to the database:\x1b[0m`, error);
