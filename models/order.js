@@ -24,6 +24,18 @@ const Order = db.define('Order', {
     timestamps: true,
     updatedAt: false,
     createdAt: 'orderDate',         // orderDate field is actually the createdAt
+    indexes: [
+        {
+            name: 'idx_customer_orderdate',
+            fields: [       // composite index with 2 fields: customer , orderDate DESC
+                'customer',
+                {
+                    attribute: 'orderDate',
+                    order: 'DESC'
+                }
+            ],
+        }
+    ]
 });
 
 
