@@ -8,11 +8,44 @@ const { validateFirebaseToken }     = require('../controllers/firebase.js');
 const { validate }                  = require('../controllers/validate.js');
 const Order                         = require('../models/order.js');
 
+let initialIntervalInSeconds = process.env.INITIALINTERVAL??30; 
+let orderLimit = process.env.ORDERLIMIT??40;   
+
 
 ///////////////////////////////////          RECIEVE ORDER          ////////////////////////////////////
 
-/** Returns a random unique id for a new order. Includes the current day and 3 random digits at the end (use 1 if <99!) */
-let orderId = () => (new Date()).toISOString().split('T')[0] + "-" + String(Math.floor(Math.random() * 1000)).padStart(3,'1')
+/** orderId.new() returns a random unique id for a new order. Includes the current date and some random digits at the end */
+let orderId = {
+    get datePart() { return (new Date()).toISOString().split('T')[0] },                     // today's date
+    get randomPart() { return String(Math.floor(Math.random()*100)).padStart(2,'1') },      // 2-digit random number (11-99)
+    lastAscendingPart: 11,      // θα αντικατασταθεί από το αντίστοιχο της τελευταίας παραγγελίας
+    // ascending, ώστε να μην υπάρχουν διπλότυπα id. Διψήφιο. Για περισσότερες από 40 παραγγελίες τη μέρα, να γίνει τριψήφιο.
+    get nextAscendingPart() {    
+        let next = this.lastAscendingPart + Math.floor(Math.random()*3) + 1;    // add 1 to 3
+        if ( next>99 ) { next = next-90 }           // το αποτέλεσμα να μείνει μεταξύ 10 and 99
+        return this.lastAscendingPart = next;       // assign and also return it
+    },
+    new: function() { 
+        return this.datePart + "-" + this.randomPart + this.nextAscendingPart;
+    }
+} 
+
+// Αντικατάσταση του lastAscendingPart από τον αύξοντα αριθμό της τελευταίας παραγγελίας
+setTimeout(async _=>{
+    let lastOrder = await Order.findOne({order:[['id','DESC']]});
+    console.debug("testing order ids...");
+    console.debug(lastOrder.orderId);
+    orderId.lastAscendingPart = +lastOrder.orderId.slice(-2);       // + converts it to number
+    console.debug(orderId.lastAscendingPart);
+    // do this 20 times
+    for (let i=0; i<2; i++){
+        console.debug(orderId.new()); 
+    }
+},initialIntervalInSeconds*1.8*1000);   // 1.8: magic number, θέλουμε μεγαλύτερο από 1
+
+
+
+
 
 /** Καταγράφει το email που υποστηρίζει ο πελάτης ότι έχει. Για λόγους troubleshooting, αν πχ το token δεν λειτουργήσει σωστά. */ 
 let consoleLogUser = (req,res,next) => {
@@ -30,7 +63,7 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
 
     //* Βήμα 1: Επικύρωση των δεδομένων της παραγγελίας
     let order = {};
-    order.id = orderId();                               // new order id
+    order.id = orderId.new();                               // new order id
     order.customer = req.customer;                      // customer validation
     order.cart = validate.cart(req.body.cart);          // cart validation
     order.notes = req.body.notes;   
@@ -41,7 +74,7 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     // console.log(JSON.stringify(order));
     
     //* Βήμα 2: Αποστολή email στο κατάστημα και στον πελάτη
-    if (process.env.ENVIRONMENT!=="DEVELOPMENT"){
+    if ( process.env.ENVIRONMENT!=="DEVELOPMENT" ){                 // ίσως && order.test!=true
         sendMail(order,'shop');                                     // do not await this
         setTimeout(_=>{sendMail(order,'customer')},2000);           // do not await this
     }
@@ -75,7 +108,7 @@ router.get(['/profile','/customer','/me'], validateFirebaseToken, (req,res) => {
 /////////////////////////////////       ORDER HISTORY       /////////////////////////////////////
 
 router.get(['/history','/orders'], validateFirebaseToken, async (req,res) => {
-    const limit = 40;
+    const limit = orderLimit;
     let orders = await Order.findAll({ where: { customer: req.customer.email }, order: [['orderDate', 'DESC']], limit }).catch(err=>{console.error(err)});
     res.json(orders);
 });
