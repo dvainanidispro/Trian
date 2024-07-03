@@ -33,14 +33,7 @@ let orderId = {
 // Αντικατάσταση του lastAscendingPart από τον αύξοντα αριθμό της τελευταίας παραγγελίας
 setTimeout(async _=>{
     let lastOrder = await Order.findOne({order:[['id','DESC']]});
-    console.debug("testing order ids...");
-    console.debug(lastOrder.orderId);
     orderId.lastAscendingPart = +lastOrder.orderId.slice(-2);       // + converts it to number
-    console.debug(orderId.lastAscendingPart);
-    // do this 20 times
-    for (let i=0; i<2; i++){
-        console.debug(orderId.new()); 
-    }
 },initialIntervalInSeconds*1.8*1000);   // 1.8: magic number, θέλουμε μεγαλύτερο από 1
 
 
@@ -89,7 +82,7 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
         notes: order.notes,
         test: order.test 
     }).then(_=>{
-        console.log(`Η παραγγελία ${order.id} καταχωρήθηκε στη βάση δεδομένων`);
+        console.log(`Η παραγγελία ${order.id} καταχωρίστηκε στη βάση δεδομένων`);
     });
 
 

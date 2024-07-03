@@ -111,7 +111,7 @@ let mailBody = (order, recipient) => {
 
         ${ (recipient=="customer") ? `
             <img src="https://api.trian.gr/trian.png" title="trian logo" alt="trian logo" />
-            <h1>Σας ευχαριστούμε για την Παραγγελία!</h1>
+            <h1>Σας ευχαριστούμε για την παραγγελία!</h1>
             <br>
         ` : ''}
 
