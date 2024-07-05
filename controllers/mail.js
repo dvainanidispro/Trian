@@ -98,6 +98,7 @@ let mailBody = (order, recipient) => {
         <head>
 
                 <style>
+                    body>*,img {margin: auto;} h1,h2,p{text-align: center;} body{background-color: ${(recipient=="customer")?"#f2f2f2":"white"};}
                     table, th, td { border:1px solid black; border-collapse: collapse; padding: 8px; line-height: 1.6; font-size: 14px; }
                     /* th:first-child, td:first-child { text-align:left; }
                     td:nth-child(2) { text-align:center; }
@@ -109,10 +110,11 @@ let mailBody = (order, recipient) => {
 
         <body>
 
-        ${ (recipient=="customer") ? `
-            <img src="https://api.trian.gr/trian.png" title="trian logo" alt="trian logo" />
-            <h1>Σας ευχαριστούμε για την παραγγελία!</h1>
-            <br>
+        ${ (recipient=="customer") ? /*html*/`
+            <div>
+                <img style="display:block" src="https://api.trian.gr/trian.png" title="trian logo" alt="trian logo"/>
+                <h1>Σας ευχαριστούμε για την παραγγελία!</h1>
+            </div><br>
         ` : ''}
 
         <table style="border:none">
@@ -181,7 +183,7 @@ let mailBody = (order, recipient) => {
                                 </table>
                 </td>
             </tr>
-        </table>
+        </table><br>
 
 
 
@@ -234,10 +236,12 @@ let mailBody = (order, recipient) => {
     `});
 
     body += /*html*/`
-            </tbody></table>
-
-            <h2> Παρατηρήσεις:</h2>
-            <p>${order.notes || "-"}</p>
+            </tbody></table><br>
+            
+            <div>
+                <h2> Παρατηρήσεις:</h2>
+                <p>${order.notes || "-"}</p>
+            </div>
             <hr><br>
         </body></html>`;
 

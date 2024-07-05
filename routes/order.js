@@ -3,7 +3,7 @@
 
 ///////////////////////////////////          DEPENDENCIES          ////////////////////////////////////
 const router                        = require('express').Router();
-const { sendMail }                  = require('../controllers/mail.js');
+const { sendMail, mailBody }        = require('../controllers/mail.js');
 const { validateFirebaseToken }     = require('../controllers/firebase.js');
 const { validate }                  = require('../controllers/validate.js');
 const Order                         = require('../models/order.js');
