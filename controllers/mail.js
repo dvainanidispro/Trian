@@ -98,17 +98,14 @@ let mailBody = (order, recipient) => {
         <head>
 
                 <style>
-                    body>*,img {margin: auto;} h1,h2,p{text-align: center;} body{background-color: ${(recipient=="customer")?"#f2f2f2":"white"};}
+                    body>*,img {margin: auto;} h1,h2,p{text-align: center;}
                     table, th, td { border:1px solid black; border-collapse: collapse; padding: 8px; line-height: 1.6; font-size: 14px; }
-                    /* th:first-child, td:first-child { text-align:left; }
-                    td:nth-child(2) { text-align:center; }
-                    td:nth-child(4) { font-weight:700; }*/
                     h2, table { margin-bottom: 10px; }
                 </style>
 
         </head>
 
-        <body>
+        <body style="background-color: ${(recipient=="customer")?"#f2f2f2":"white"};">
 
         ${ (recipient=="customer") ? /*html*/`
             <div>
@@ -117,7 +114,7 @@ let mailBody = (order, recipient) => {
             </div><br>
         ` : ''}
 
-        <table style="border:none">
+        <table style="border:none;margin:auto;">
             <tr>
                 <td style="vertical-align:top; border:none;">
                                 <h2 style="text-align:center">Στοιχεία πελάτη</h2>
@@ -192,7 +189,7 @@ let mailBody = (order, recipient) => {
 
 
         <h2>Προϊόντα παραγγελίας</h2>
-        <table>
+        <table style="margin:auto">
             <thead><tr>
             <th>Τμχ</th><th>Περιγραφή</th><th>Παράδοση</th><th>Συνταγή</th><th>Κωδικός</th><th>Τύπος</th><th>Τιμή</th>
             </tr></thead>
