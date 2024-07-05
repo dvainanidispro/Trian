@@ -6,6 +6,7 @@ const router                        = require('express').Router();
 const { sendMail, mailBody }        = require('../controllers/mail.js');
 const { validateFirebaseToken }     = require('../controllers/firebase.js');
 const { validate }                  = require('../controllers/validate.js');
+const { Op }                        = require('sequelize');
 const Order                         = require('../models/order.js');
 
 let initialIntervalInSeconds = process.env.INITIALINTERVAL??30; 
@@ -16,28 +17,44 @@ let orderLimit = process.env.ORDERLIMIT??40;
 
 /** orderId.new() returns a random unique id for a new order. Includes the current date and some random digits at the end */
 let orderId = {
-    get datePart() { return (new Date()).toISOString().split('T')[0] },                     // today's date
-    get randomPart() { return String(Math.floor(Math.random()*100)).padStart(2,'1') },      // 2-digit random number (11-99)
-    lastAscendingPart: 11,      // θα αντικατασταθεί από το αντίστοιχο της τελευταίας παραγγελίας
-    // ascending, ώστε να μην υπάρχουν διπλότυπα id. Διψήφιο. Για περισσότερες από 40 παραγγελίες τη μέρα, να γίνει τριψήφιο.
-    get nextAscendingPart() {    
-        let next = this.lastAscendingPart + Math.floor(Math.random()*3) + 1;    // add 1 to 3
-        if ( next>99 ) { next = next-90 }           // το αποτέλεσμα να μείνει μεταξύ 10 and 99
-        return this.lastAscendingPart = next;       // assign and also return it
-    },
+    todaysOrders: [],           // θα αντικατασταθεί από τις παραγγελίες της σημερινής ημέρας
+    get datePart() { return (new Date()).toISOString().split('T')[0] },  // today's date
+    randomPartDigits: 4,
+    get randomUpper() { return 10**this.randomPartDigits },                // για 4 ψηφία, είναι 10^4=10000
+    get randomPart() { return String(Math.floor(Math.random()*this.randomUpper)).padStart(this.randomPartDigits,'1') },      // n-digit random number (1111-9999)
+    
     new: function() { 
-        return this.datePart + "-" + this.randomPart + this.nextAscendingPart;
+        let newId = '';
+        do {
+            newId = this.datePart + "-" + this.randomPart;
+        } while (this.todaysOrders.includes(newId) && this.todaysOrders.length<(this.randomUpper*0.8));
+        // Επανάληψη μέχρι να βρεθεί μοναδικό id ή να μην υπάρχουν άλλα διαθέσιμα id 
+        // (όπου διαθέσιμα id: έβαλα 80% του randomUpper για ασφάλεια, λόγω padStart 1, πχ για 4 ψηφία, 10000*0.8=8000 μοναδικοί)
+
+        // Αποθήκευση του νέου id στον πίνακα των παραγγελιών και καθάρισμά του (κράτα μόνο τις σημερινές)
+        this.todaysOrders.push(newId);
+        this.todaysOrders = this.todaysOrders.filter(orderId=>orderId.includes(this.datePart));
+        return newId;
     }
 } 
 
-// Αντικατάσταση του lastAscendingPart από τον αύξοντα αριθμό της τελευταίας παραγγελίας
+// Αντικατάσταση του todaysOrders από τις σημερινές παραγγελίες κατά την εκκίνηση του server (μια φορά)
 setTimeout(async _=>{
-    let lastOrder = await Order.findOne({order:[['id','DESC']]});
-    orderId.lastAscendingPart = +lastOrder.orderId.slice(-2);       // + converts it to number
-},initialIntervalInSeconds*1.8*1000);   // 1.8: magic number, θέλουμε μεγαλύτερο από 1
+    const startOfToday = new Date(); startOfToday.setHours(0, 0, 0, 0);
+    let todaysOrders = await Order.findAll({ where: { orderDate: {[Op.gt]: startOfToday} } });
+    orderId.todaysOrders = todaysOrders.map(order=>order.orderId);
+    console.debug('Σημερινές παραγγελίες ως τώρα: ' + orderId.todaysOrders);
+},initialIntervalInSeconds*1.8*1000);   // 1.8: magic number (κακώς), θέλουμε μεγαλύτερο από 1
 
 
-
+// Για λόγους testing. TODO: να φύγει όλο
+setTimeout(_=>{
+    console.debug('Testing new order numbering (please, ignore):');
+    for (let i=0; i<4; i++) {
+        orderId.new();
+    }
+    console.debug(orderId.todaysOrders);
+},initialIntervalInSeconds*5*1000);
 
 
 /** Καταγράφει το email που υποστηρίζει ο πελάτης ότι έχει. Για λόγους troubleshooting, αν πχ το token δεν λειτουργήσει σωστά. */ 
