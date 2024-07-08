@@ -3,6 +3,8 @@
 const sendGridMail = require('@sendgrid/mail');
 sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+const senderName = "Trian-Tokai";
+
 
 // INITIALIZE MAIL TRANSPORTER
 // let transporter = nodemailer.createTransport({
@@ -17,6 +19,7 @@ sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 //         rejectUnauthorized: false,
 //     },
 // });
+
 
 
 
@@ -90,6 +93,10 @@ let mailBody = (order, recipient) => {
         maximumFractionDigits: 2,
     })).format(price);
 
+
+
+    //////////////////////////#    THE EMAIL BODY   ///////////////////////////
+    /***********************   THE EMAIL BODY   ***********************/
     let body = /*html*/`
 
         <!doctype html>
@@ -98,23 +105,24 @@ let mailBody = (order, recipient) => {
         <head>
 
                 <style>
-                    body>*,img {margin: auto;} h1,h2,p{text-align: center;}
+                    h1,h2,p{text-align: center;}
                     table, th, td { border:1px solid black; border-collapse: collapse; padding: 8px; line-height: 1.6; font-size: 14px; }
                     h2, table { margin-bottom: 10px; }
                 </style>
 
         </head>
 
-        <body style="background-color: ${(recipient=="customer")?"#f2f2f2":"white"};">
+        <body style="background-color:${(recipient=="customer")?"#607d8b":"white"}; padding:1rem;">
+        <div id="container "style="max-width:fit-content ;margin:auto; padding:1rem; background-color:${(recipient=="customer")?"#f5f5f5":"white"};">
 
         ${ (recipient=="customer") ? /*html*/`
             <div>
-                <img style="display:block" src="https://api.trian.gr/trian.png" title="trian logo" alt="trian logo"/>
+                <img style="display:block;margin:auto" src="https://api.trian.gr/trian.png" title="trian logo" alt="trian logo"/>
                 <h1>Σας ευχαριστούμε για την παραγγελία!</h1>
             </div><br>
         ` : ''}
 
-        <table style="border:none;margin:auto;">
+        <table style="border:none;" align="center">
             <tr>
                 <td style="vertical-align:top; border:none;">
                                 <h2 style="text-align:center">Στοιχεία πελάτη</h2>
@@ -189,7 +197,7 @@ let mailBody = (order, recipient) => {
 
 
         <h2>Προϊόντα παραγγελίας</h2>
-        <table style="margin:auto">
+        <table align="center">
             <thead><tr>
             <th>Τμχ</th><th>Περιγραφή</th><th>Παράδοση</th><th>Συνταγή</th><th>Κωδικός</th><th>Τύπος</th><th>Τιμή</th>
             </tr></thead>
@@ -240,7 +248,7 @@ let mailBody = (order, recipient) => {
                 <p>${order.notes || "-"}</p>
             </div>
             <hr><br>
-        </body></html>`;
+        </div></body></html>`;
 
     
 
@@ -256,7 +264,10 @@ let sendMail = (order, recipient) => {
     let recipientEmail = (recipient=='customer') ? order.customer['email'] : process.env.MAILTO;
 
     let mailOptions = {
-        from: process.env.MAILFROM,
+        from: {
+            name: senderName,
+            email: process.env.MAILFROM,
+        },
         to: recipientEmail,
         subject: 'Παραγγελία: ' + order.id ,
         text: 'Παραγγελία: ' + order.id,

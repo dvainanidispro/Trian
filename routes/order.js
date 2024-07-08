@@ -43,18 +43,8 @@ setTimeout(async _=>{
     const startOfToday = new Date(); startOfToday.setHours(0, 0, 0, 0);
     let todaysOrders = await Order.findAll({ where: { orderDate: {[Op.gt]: startOfToday} } });
     orderId.todaysOrders = todaysOrders.map(order=>order.orderId);
-    console.debug('Σημερινές παραγγελίες ως τώρα: ' + orderId.todaysOrders);
+    // console.debug('Σημερινές παραγγελίες ως τώρα: ' + orderId.todaysOrders);
 },initialIntervalInSeconds*1.8*1000);   // 1.8: magic number (κακώς), θέλουμε μεγαλύτερο από 1
-
-
-// Για λόγους testing. TODO: να φύγει όλο
-setTimeout(_=>{
-    console.debug('Testing new order numbering (please, ignore):');
-    for (let i=0; i<4; i++) {
-        orderId.new();
-    }
-    console.debug(orderId.todaysOrders);
-},initialIntervalInSeconds*5*1000);
 
 
 /** Καταγράφει το email που υποστηρίζει ο πελάτης ότι έχει. Για λόγους troubleshooting, αν πχ το token δεν λειτουργήσει σωστά. */ 
