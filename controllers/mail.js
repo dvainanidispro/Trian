@@ -247,7 +247,17 @@ let mailBody = (order, recipient) => {
                 <h2> Παρατηρήσεις:</h2>
                 <p>${order.notes || "-"}</p>
             </div>
-            <hr><br>
+            <hr>
+
+            ${ (recipient=="customer") ? /*html*/`
+                <div><p>
+                    Ν. Χ. ΤΡΙΑΝΤΑΦΥΛΛΟΥ & ΣΙΑ ΙΚΕ<br>
+                    Περραιβού 10 & Βουλιαγμένης 13<br>
+                    11636, Αθήνα<br>
+                    2103821641 - 2109246410 - 2109246411<br>
+                </p></div><br>
+            ` : ''}
+
         </div></body></html>`;
 
     
