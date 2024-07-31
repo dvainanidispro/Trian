@@ -266,8 +266,8 @@ server.get('/api/update/:token', validateSystemToken, (req,res) => {
 
 
 let port = process.env.PORT??80;
-let listeningURL = process.env.LISTENINGURL??'http://localhost';
-const startWebServer = (server,port,listeningURL="http://localhost") => {
+let listeningURL = process.env.RAILWAY_PUBLIC_DOMAIN ?? process.env.LISTENINGURL ?? 'http://localhost';
+const startWebServer = (server,port,listeningURL) => {
     server.listen(port, () => {
         let presentTime = () => (new Date()).toLocaleString('el-GR',{hourCycle: 'h23', dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Athens'});
         console.log(`\x1b[35m Server is listening at \x1b[4m ${listeningURL} \x1b[0m\x1b[35m. Started at: ${presentTime()}. \x1b[0m`);

@@ -3,8 +3,7 @@
 const sendGridMail = require('@sendgrid/mail');
 sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const senderName = "Trian-Tokai";
-
+const senderName = process.env.MAILSENDERNAME ?? "Trian-Tokai";
 
 // INITIALIZE MAIL TRANSPORTER
 // let transporter = nodemailer.createTransport({
@@ -253,7 +252,7 @@ let mailBody = (order, recipient) => {
                 <div><p>
                     Ν. Χ. ΤΡΙΑΝΤΑΦΥΛΛΟΥ & ΣΙΑ ΙΚΕ<br>
                     Περραιβού 10 & Βουλιαγμένης 13<br>
-                    11636, Αθήνα<br>
+                    11636 Αθήνα<br>
                     2103821641 - 2109246410 - 2109246411<br>
                 </p></div><br>
             ` : ''}
