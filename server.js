@@ -12,15 +12,18 @@ const express = require('express');
 const server = express();
 var cors = require('cors');
 
-// Cookies (makes req.cookies available)
-// const cookieParser = require('cookie-parser');
-// server.use(cookieParser());
+// Status monitor
+let statusMonitor = require('./controllers/status.js');
+server.use(statusMonitor.middleware);
+
 // grab post/put variables, json objects and send static files
 server.use(express.urlencoded({extended: false})); 
 server.use(express.json());
 // server.use(express.static('public')); 
 
+// Database
 const {db, dbTest} = require('./models/database.js');
+
 
 
 
@@ -80,7 +83,7 @@ let fetchEverythingFromSoftOne = async function(once=false) {
     await delay(initialIntervalInSeconds);
     SoftOne.lens();
     if (!once) {setInterval(SoftOne.lens,1000*60*60*refreshIntervalInHours)}
-    await delay(initialIntervalInSeconds);
+    await delay(initialIntervalInSeconds*1.3);
     updatingNow = false;
     dataOK = (Data.customers.length && Data.frames.length && Data.lens.length);   // Data is OK, if we have data from this or previous fetch.
     if (dataOK) {
@@ -255,8 +258,7 @@ server.get('/api/update/:token', validateSystemToken, (req,res) => {
     res.send('Λήφθηκε εντολή για ενημέρωση πελατών και προϊόντων. Η ενημέρωση θα ολοκληρωθεί στα επόμενα λεπτά.');
 });
 
-
-
+server.get('/status/:token', validateSystemToken, statusMonitor.pageRoute);
 
 
 
