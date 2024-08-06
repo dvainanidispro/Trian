@@ -4,19 +4,19 @@
 
 let config = {
     title: 'Trian API status',
-    path:'',
+    path:'',                    // use middleware instead
     spans: [{
         interval: 1,            // Every second
         retention: 60           // Keep 60 datapoints in memory
-      }, {
-        interval: 15,           // Every 15 seconds
-        retention: 60
+    //   }, {
+    //     interval: 15,           // Every 15 seconds
+    //     retention: 60
       }, {
         interval: 60,           // Every 1 minute
         retention: 60
-      }, {
-        interval: 60*60,           // Every 1 hour
-        retention: 60
+    //   }, {
+    //     interval: 60*60,           // Every 1 hour
+    //     retention: 24
       }],
       chartVisibility: {
         cpu: true,
