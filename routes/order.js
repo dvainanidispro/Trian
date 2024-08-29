@@ -118,8 +118,9 @@ router.get(['/history','/orders'], validateFirebaseToken, async (req,res) => {
 /////////////////////////////////       PRINT HTML ORDER        /////////////////////////////////////
 router.get(['/print/:token/:orderId'], validateSystemToken, async (req,res) => {
     let order = await Order.findOne({ where: { orderId: req.params.orderId } });
-    order.customer = await getCustomer(order.customer);
     if (!order) { res.send('Η παραγγελία δεν βρέθηκε'); return; }
+    // Φέρνει τον πελάτη (αντικείμενο). Αν όχι (πχ έχει διαγραφεί ο πελάτης), να εμφανίζονται undefined (όχι error)
+    order.customer = getCustomer(order.customer)??'undefined';     
     res.send(mailBody(order,'shop'));
 });
 
