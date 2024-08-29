@@ -2,12 +2,13 @@
 
 
 ///////////////////////////////////          DEPENDENCIES          ////////////////////////////////////
-const router                        = require('express').Router();
-const { sendMail, mailBody }        = require('../controllers/mail.js');
-const { validateFirebaseToken }     = require('../controllers/firebase.js');
-const { validate }                  = require('../controllers/validate.js');
-const { Op }                        = require('sequelize');
-const Order                         = require('../models/order.js');
+const router                            = require('express').Router();
+const { sendMail, mailBody }            = require('../controllers/mail.js');
+const { validateFirebaseToken }         = require('../controllers/firebase.js');
+const { validate, validateSystemToken } = require('../controllers/validate.js');
+const { getCustomer }                   = require('../controllers/SoftOne.js');
+const { Op }                            = require('sequelize');
+const Order                             = require('../models/order.js');
 
 let initialIntervalInSeconds = process.env.INITIALINTERVAL??30; 
 let orderLimit = process.env.ORDERLIMIT??40;   
@@ -113,6 +114,14 @@ router.get(['/history','/orders'], validateFirebaseToken, async (req,res) => {
     res.json(orders);
 });
 
+
+/////////////////////////////////       PRINT HTML ORDER        /////////////////////////////////////
+router.get(['/print/:token/:orderId'], validateSystemToken, async (req,res) => {
+    let order = await Order.findOne({ where: { orderId: req.params.orderId } });
+    order.customer = await getCustomer(order.customer);
+    if (!order) { res.send('Η παραγγελία δεν βρέθηκε'); return; }
+    res.send(mailBody(order,'shop'));
+});
 
 
 ///////////////////////////////////         EXPORTS         /////////////////////////////////////
