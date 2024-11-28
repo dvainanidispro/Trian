@@ -14,11 +14,14 @@ let initialIntervalInSeconds = process.env.INITIALINTERVAL??30;
 let orderLimit = process.env.ORDERLIMIT??40;   
 
 
-///////////////////////////////////          RECIEVE ORDER          ////////////////////////////////////
 
-/** orderId.new() returns a random unique id for a new order. Includes the current date and some random digits at the end */
+
+///////////////////////////////////          ORDER UTILITIES          ////////////////////////////////////
+
+
+/** Το orderId.new() επιτρέφει ένα μοναδικό id που περιλαμβάνει την ημερομηνία και μερικά τυχαία ψηφία στο τέλος. */
 let orderId = {
-    todaysOrders: [],           // θα αντικατασταθεί από τις παραγγελίες της σημερινής ημέρας
+    todaysOrders: [],           // ενημερώνεται με τις παραγγελίες της σημερινής ημέρας με κάθε εκτέλεση του new()
     get datePart() { return (new Date()).toISOString().split('T')[0] },  // today's date
     randomPartDigits: 4,
     get randomUpper() { return 10**this.randomPartDigits },                // για 4 ψηφία, είναι 10^4=10000
@@ -32,7 +35,7 @@ let orderId = {
         // Επανάληψη μέχρι να βρεθεί μοναδικό id ή να μην υπάρχουν άλλα διαθέσιμα id 
         // (όπου διαθέσιμα id: έβαλα 80% του randomUpper για ασφάλεια, λόγω padStart 1, πχ για 4 ψηφία, 10000*0.8=8000 μοναδικοί)
 
-        // Αποθήκευση του νέου id στον πίνακα των παραγγελιών και καθάρισμά του (κράτα μόνο τις σημερινές)
+        // Αποθήκευση του νέου id στο array των παραγγελιών και καθάρισμά του (κράτα μόνο τις σημερινές)
         this.todaysOrders.push(newId);
         this.todaysOrders = this.todaysOrders.filter(orderId=>orderId.includes(this.datePart));
         return newId;
@@ -60,11 +63,14 @@ let consoleLogUser = (req,res,next) => {
 
 ///////////////////////////////////           ORDER ROUTE          ///////////////////////////////////
 
+
+
 router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
+
 
     //* Βήμα 1: Επικύρωση των δεδομένων της παραγγελίας
     let order = {};
-    order.id = orderId.new();                               // new order id
+    order.id = orderId.new();                           // new order id
     order.customer = req.customer;                      // customer validation
     order.cart = validate.cart(req.body.cart);          // cart validation
     order.notes = req.body.notes;   
@@ -74,6 +80,7 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     console.log(`\x1b[36m Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) δημιούργησε νέα παραγγελία με κωδικό ${order.id} \x1b[0m`);
     // console.log(JSON.stringify(order));
     
+
     //* Βήμα 2: Αποστολή email στο κατάστημα και στον πελάτη
     if ( process.env.ENVIRONMENT!=="DEVELOPMENT" ){                 // ίσως && order.test!=true
         sendMail(order,'shop');                                     // do not await this
@@ -98,6 +105,8 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     // res.send(mailBody(order,'customer'));       // shop , customer
     res.json(order);
 });
+
+
 
 // PROFILE ROUTE
 router.get(['/profile','/customer','/me'], validateFirebaseToken, (req,res) => {

@@ -18,7 +18,8 @@ exports.prettyJSON = Obj => /*html*/`
 
 /** 
  * Recieves an array of objects, all with same properties, and returns an object, 
- * the properties of which are arrays of unique values found in the input array's objects 
+ * the properties of which are arrays of unique values found in the input array's objects.
+ * Useful to create (dropdown) filters from an array of objects.
 */
 exports.uniqueOf = (arrayOfObjects, arrayOfKeys=null) => {
     if (!Array.isArray(arrayOfObjects) || arrayOfObjects.length === 0) {
@@ -83,8 +84,9 @@ exports.multiFilter = multiFilter;
 
 let unique = (arr) => [...new Set(arr)];
 
-let uniqueKeys = (arrayOfObjects, Key) => {
-    return unique( arrayOfObjects.map(item=>item[Key]) ).sort();
+/** It should be called uniqueValuesByKey. From an array of similar objects, it extracts the unique values found for the specific key */
+let uniqueKeys = (arrayOfObjects, key) => {
+    return unique( arrayOfObjects.map(item=>item[key]) ).sort();
 };
 
 exports.treeOf = (arrayOfObjects, keys) => {
