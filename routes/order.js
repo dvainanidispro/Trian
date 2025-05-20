@@ -11,7 +11,7 @@ const { Op }                            = require('sequelize');
 const Order                             = require('../models/order.js');
 
 let initialIntervalInSeconds = process.env.INITIALINTERVAL??30; 
-let orderLimit = process.env.ORDERLIMIT??40;   
+let orderLimit = process.env.ORDERLIMIT??50;   
 
 
 
@@ -72,10 +72,11 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     let order = {};
     order.id = orderId.new();                           // new order id
     order.customer = req.customer;                      // customer validation
+    // To body.οτιδήποτε δεν έρχεται validated!            
     order.cart = validate.cart(req.body.cart);          // cart validation
-    order.notes = req.body.notes;   
-    // To order.cart είναι validated. Το body.οτιδήποτε όχι!            
     order.costs = validate.costs(req.body.costs, order.cart, req.customer);         // costs validation       
+    order.notes = req.body.notes;   
+    order.reference = req.body.reference;
     order.test = req.body.test;
     console.log(`\x1b[36m Ο πελάτης ${req.customer['Επωνυμία']} (${req.customer['email']}) δημιούργησε νέα παραγγελία με κωδικό ${order.id} \x1b[0m`);
     // console.log(JSON.stringify(order));
@@ -95,7 +96,8 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
         cart: order.cart,
         costs: order.costs,
         notes: order.notes,
-        test: order.test 
+        reference: order.reference,
+        test: order.test,
     }).then(_=>{
         console.log(`Η παραγγελία ${order.id} καταχωρίστηκε στη βάση δεδομένων`);
     });
@@ -124,7 +126,9 @@ router.get(['/history','/orders'], validateFirebaseToken, async (req,res) => {
 });
 
 
+
 /////////////////////////////////       PRINT HTML ORDER        /////////////////////////////////////
+
 router.get(['/print/:token/:orderId'], validateSystemToken, async (req,res) => {
     let order = await Order.findOne({ where: { orderId: req.params.orderId } });
     if (!order) { res.send('Η παραγγελία δεν βρέθηκε'); return; }

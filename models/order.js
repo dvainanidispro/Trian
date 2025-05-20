@@ -17,6 +17,7 @@ const Order = db.define('Order', {
     cart: DataTypes.JSON,
     costs: DataTypes.JSON,
     notes: DataTypes.STRING(500),
+    reference: DataTypes.STRING(100),     // client number for the order
     test: DataTypes.BOOLEAN,
 
 }, {

@@ -91,7 +91,7 @@ validate.costs = (costs, cart, customer=null) => {
     costs.total = euro( costs.cart + costs.shipping );
     costs.totalWithVat = euro( costs.total + costs.total*costs.vat );
     return costs;
-}
+};
 
 
 
