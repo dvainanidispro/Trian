@@ -264,8 +264,8 @@ let getCustomer = (email) => {
     if (!store) {return null}
 
     // 3. Είτε κατάστημα, είτε υποκατάστημα, συνεχίζουμε:
-    store['Tρόπος αποστολής'] = (store['Tρόπος αποστολής']!="0") ? store['Tρόπος αποστολής'] : store['Τρόπος αποστολής Υπ/τος'];
-    store.deliveryCost = (['ACS','SPEEDEX'].some(d=>store['Tρόπος αποστολής']?.includes(d))) ? 2.6 : 0;
+    store['Τρ.Αποστολής'] = (store['Τρ.Αποστολής']!="0") ? store['Τρ.Αποστολής'] : store['Τρόπος αποστολής Υπ/τος'];
+    store.deliveryCost = (['ACS','SPEEDEX'].some(d=>store['Τρ.Αποστολής']?.includes(d))) ? 2.6 : 0;
     store.vat = (store['Λογ.Κατηγορία'].includes('Κανονικό Φ.Π.Α.')) ? 0.24 
         : (store['Λογ.Κατηγορία'].includes('Μειωμένο Φ.Π.Α.')) ? 0.17 : 0;
     // Διάγραψε όλα τα keys που περιέχουν 'Υπ/τος', διότι είναι άχρηστα.
