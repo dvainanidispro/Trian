@@ -151,6 +151,10 @@ let mailBody = (order, recipient) => {
                                         <td>Κωδικός παραγγελίας</td>
                                         <td>${order.id}</td>
                                     </tr>
+                                    <tr style="display:${(order?.reference?.length)?"table-row":"none"}">
+                                        <td>Reference</td>
+                                        <td>${order.reference}</td>
+                                    </tr>
                                     <tr>
                                         <td>Ημερομηνία παραγγελίας</td>
                                         <td>${(new Date()).toLocaleDateString('el-GR')} </td>
