@@ -68,7 +68,7 @@ let consoleLogUser = (req,res,next) => {
 router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
 
 
-    //* Βήμα 1: Επικύρωση των δεδομένων της παραγγελίας
+    //# Βήμα 1: Επικύρωση των δεδομένων της παραγγελίας
     let order = {};
     order.id = orderId.new();                           // new order id
     order.customer = req.customer;                      // customer validation
@@ -82,14 +82,14 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     // console.log(JSON.stringify(order));
     
 
-    //* Βήμα 2: Αποστολή email στο κατάστημα και στον πελάτη
+    //# Βήμα 2: Αποστολή email στο κατάστημα και στον πελάτη
     if ( process.env.ENVIRONMENT!=="DEVELOPMENT" ){                 // ίσως && order.test!=true
         sendMail(order,'shop');                                     // do not await this
         setTimeout(_=>{sendMail(order,'customer')},2000);           // do not await this
     }
 
 
-    //* Βήμα 3: Καταχώριση της παραγγελίας στη βάση 
+    //# Βήμα 3: Καταχώριση της παραγγελίας στη βάση 
     Order.create({                                                  // do not await this
         orderId: order.id,
         customer: order.customer.email,
@@ -103,14 +103,17 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     });
 
 
-    // Respond to client (browser)
+    //# Βήμα 4: Αποστολή της παραγγελίας στο SoftOne
+    //# Προς υλοποίηση
+
+    //# Τέλος: Απάντηση στον πελάτη (browser)
     // res.send(mailBody(order,'customer'));       // shop , customer
     res.json(order);
 });
 
 
 
-// PROFILE ROUTE
+//* PROFILE ROUTE
 router.get(['/profile','/customer','/me'], validateFirebaseToken, (req,res) => {
     res.json(req.customer);
 });

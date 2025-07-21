@@ -15,6 +15,12 @@ let euro = (value) => {
     return Math.round(num * 100) / 100; 
 };
 
+/** Επιστρέφει τη μέγιστη προθεσμία παράδοσης για ένα ζευγάρι φακών */
+let maxDelivery = (deliveryValuesArray) => {
+    let deliveryOrder = ["ΕΤΟΙΜΟΠΑΡΑΔΟΤΟΣ","48 ΩΡΕΣ","7-8 ΕΡΓΑΣΙΜΕΣ","10-12 ΕΡΓΑΣΙΜΕΣ"];
+    return deliveryValuesArray.sort( (a,b) => deliveryOrder.indexOf(a)-deliveryOrder.indexOf(b)).pop();
+};
+
 
 //////////////////////////      validateSystemToken
 
@@ -57,9 +63,10 @@ validate.cart = (cart,customer=null) =>{
             if (lensR) { cartItem.item.R['Τιμή'] = lensR['Τιμή'] }
             let lensL = DataForCustomers.lens.find(lens=>lens['Κωδικός']===cartItem.item.L['Κωδικός']);
             if (lensL) { cartItem.item.L['Τιμή'] = lensL['Τιμή'] }
-            // Επιπλέον χρέωση για ζευγάρια TRIAN:
+            // Επιπλέον υπολογισμοί και χρεώσεις για ζευγάρια TRIAN
+            cartItem.item['Παράδοση'] = maxDelivery([cartItem.item.R['Παράδοση'], cartItem.item.L['Παράδοση']]);    // Προσθήκη πεδίου
             let cardPrice = (cartItem.item.L["Κατασκευαστής"]=="TRIAN" && cartItem.item.retail.length>1) ? costOf.card : 0;
-            cartItem.cardPrice = cardPrice;
+            cartItem.item.cardPrice = cardPrice;
             cartItem.item['Τιμή'] = euro( 
                 + parseFloat(cartItem.item.R['Τιμή']) 
                 + parseFloat(cartItem.item.L['Τιμή'])
