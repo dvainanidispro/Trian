@@ -88,7 +88,7 @@ SoftOne.fetch = async (sqlName,pagination=false) => {
                 rowofpage: pagination==true ? 100 : 9999999,
             },
             responseType: 'arraybuffer',
-            reponseEncoding: 'binary'
+            // responseEncoding: 'binary',
         });
         // console.log(response);
 

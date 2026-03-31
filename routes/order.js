@@ -9,6 +9,7 @@ const { validate, validateSystemToken } = require('../controllers/validate.js');
 const { getCustomer }                   = require('../controllers/SoftOne.js');
 const { Op }                            = require('sequelize');
 const Order                             = require('../models/order.js');
+const { sendOrderToSoftOne }            = require('../controllers/orderToSoftone.js');
 
 let initialIntervalInSeconds = process.env.INITIALINTERVAL??30; 
 let orderLimit = process.env.ORDERLIMIT??50;   
@@ -90,23 +91,26 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
 
 
     //# Βήμα 3: Καταχώριση της παραγγελίας στη βάση 
-    Order.create({                                                  // do not await this
-        orderId: order.id,
-        customer: order.customer.email,
-        cart: order.cart,
-        costs: order.costs,
-        notes: order.notes,
-        reference: order.reference,
-        test: order.test,
-    }).then(_=>{
-        console.log(`Η παραγγελία ${order.id} καταχωρίστηκε στη βάση δεδομένων`);
-    });
-
+    if ( process.env.ENVIRONMENT!=="DEVELOPMENT" ){ 
+        Order.create({                                                  // do not await this
+            orderId: order.id,
+            customer: order.customer.email,
+            cart: order.cart,
+            costs: order.costs,
+            notes: order.notes,
+            reference: order.reference,
+            test: order.test,
+        }).then(_=>{
+            console.log(`Η παραγγελία ${order.id} καταχωρίστηκε στη βάση δεδομένων`);
+        });
+    }
 
     //# Βήμα 4: Αποστολή της παραγγελίας στο SoftOne
-    //# Προς υλοποίηση
+    if ( process.env.ENVIRONMENT!=="DEVELOPMENT" ){                 // ίσως && order.test!=true
+        sendOrderToSoftOne(order);          // do not await this
+    }
 
-    //# Τέλος: Απάντηση στον πελάτη (browser)
+    //# Βήμα 5: Τέλος - Απάντηση στον πελάτη (browser)
     // res.send(mailBody(order,'customer'));       // shop , customer
     res.json(order);
 });
