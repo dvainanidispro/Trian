@@ -94,7 +94,8 @@ function proccessSoftOneOrder(order) {
  * {
  *   "success": true,
  *   "totalcount": 2,
- *   "data": ["αριθμοί παρασταστικών σε array από strings"]
+ *   "data": ["αριθμοί παρασταστικών σε array από strings"],
+ *   "errors": ["array που προσθέτουμε εμείς αν δούμε ότι κάποια από τις απαντήσεις περιέχει 'ESoftOneError'"],
  * }
  * */
 async function sendOrderToSoftOne(order) {
@@ -113,13 +114,21 @@ async function sendOrderToSoftOne(order) {
         });
         const decoder = new TextDecoder('ISO-8859-7');
         const decodedResponse = decoder.decode(response.data);
-        const softOneResponse = JSON.parse(decodedResponse);
-        // Δείγμα softOneResponse:
+        let softOneResponse = JSON.parse(decodedResponse);
+        // Δείγμα softOneResponse μέχρι στιγμής:
         // {
         //   "success": true,
         //   "totalcount": 2,
         //   "data": ["αριθμοί παρασταστικών σε array από strings"]
         // }
+
+        // Χωρίζουμε το data σε επιτυχημένες απαντήσεις και errors, αν υπάρχουν
+        if (softOneResponse.data?.length) {
+            // Αποτελεί error αν περιέχει 'ESoftOneError' ή αν περιέχει κενό χαρακτήρα
+            const isError = s => s.includes('ESoftOneError') || s.trim().includes(' ');
+            softOneResponse.errors = softOneResponse.data.filter(s => isError(s));
+            softOneResponse.data = softOneResponse.data.filter(s => !isError(s));
+        }
 
         if (softOneResponse.success) {
             console.log(`\x1b[36mΗ παραγγελία ${order.id} στάλθηκε επιτυχώς στο SoftOne. Αριθμοί παραστατικών: ${softOneResponse.data.join(', ')} \x1b[0m`);

@@ -42,7 +42,7 @@ const {validateFirebaseToken} = require('./controllers/firebase.js');
 
 // Other variables
 let environment = process.env.ENVIRONMENT;
-let initialIntervalInSeconds = process.env.INITIALINTERVAL??30;    // in seconds
+let initialIntervalInSeconds = process.env.INITIALINTERVAL??20;    // in seconds
 let refreshIntervalInHours = process.env.REFRESHINTERVAL??24;   // in hours
 /** When this is true, an update is being performed, so no other update can be done simultaneously */
 let updatingNow = false;    // to prevent multiple simultaneous updates from SoftOne

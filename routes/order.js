@@ -11,7 +11,7 @@ const { Op }                            = require('sequelize');
 const Order                             = require('../models/order.js');
 const { sendOrderToSoftOne }            = require('../controllers/orderToSoftone.js');
 
-let initialIntervalInSeconds = process.env.INITIALINTERVAL??30; 
+let initialIntervalInSeconds = process.env.INITIALINTERVAL??20; 
 let orderLimit = process.env.ORDERLIMIT??50;   
 
 
