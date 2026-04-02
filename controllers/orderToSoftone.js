@@ -1,9 +1,13 @@
 'use strict';
 
 const axios = require('axios');
+const softOneQueue = require('../models/softone_queue.js');
 
 /** Αντιστοίχιση κλειδιών της παραγγελίας με τα απαιτούμενα από το SoftOne */
 const keyMap = {
+    // order
+    "reference": "Reference",
+    
     // customers
     "Κωδικός": "CODE",
     "Επωνυμία": "NAME",
@@ -87,6 +91,18 @@ function proccessSoftOneOrder(order) {
 
 
 
+/** Καταχώριση αποτελέσματος αποστολής στο softone_queue */
+async function storeSoftoneOrder(order, softoneResponse) {
+    return softOneQueue.create({
+        orderId: order.id,
+        status: softoneResponse.success ? 'completed' : 'pending',
+        payload: order,
+        response: softoneResponse,
+        attempts: 1,
+    }).catch(err => console.error(`Error storing SoftOne queue entry for order ${order.id}:`, err));
+}
+
+
 /** 
  * Αποστολή παραγγελίας στο SoftOne 
  * @param {Object} order - Το αντικείμενο παραγγελίας που θα σταλεί στο SoftOne. Η συνάρτηση αναλαμβάνει να το διαμορφώσει κατάλληλα πριν την αποστολή.
@@ -114,8 +130,8 @@ async function sendOrderToSoftOne(order) {
         });
         const decoder = new TextDecoder('ISO-8859-7');
         const decodedResponse = decoder.decode(response.data);
-        let softOneResponse = JSON.parse(decodedResponse);
-        // Δείγμα softOneResponse μέχρι στιγμής:
+        let softoneResponse = JSON.parse(decodedResponse);
+        // Δείγμα softoneResponse μέχρι στιγμής:
         // {
         //   "success": true,
         //   "totalcount": 2,
@@ -123,23 +139,26 @@ async function sendOrderToSoftOne(order) {
         // }
 
         // Χωρίζουμε το data σε επιτυχημένες απαντήσεις και errors, αν υπάρχουν
-        if (softOneResponse.data?.length) {
+        if (softoneResponse.data?.length) {
             // Αποτελεί error αν περιέχει 'ESoftOneError' ή αν περιέχει κενό χαρακτήρα
             const isError = s => s.includes('ESoftOneError') || s.trim().includes(' ');
-            softOneResponse.errors = softOneResponse.data.filter(s => isError(s));
-            softOneResponse.data = softOneResponse.data.filter(s => !isError(s));
+            softoneResponse.errors = softoneResponse.data.filter(s => isError(s));
+            softoneResponse.data = softoneResponse.data.filter(s => !isError(s));
         }
 
-        if (softOneResponse.success) {
-            console.log(`\x1b[36mΗ παραγγελία ${order.id} στάλθηκε επιτυχώς στο SoftOne. Αριθμοί παραστατικών: ${softOneResponse.data.join(', ')} \x1b[0m`);
+        if (softoneResponse.success) {
+            console.log(`\x1b[36mΗ παραγγελία ${order.id} στάλθηκε επιτυχώς στο SoftOne. Αριθμοί παραστατικών: ${softoneResponse.data.join(', ')} \x1b[0m`);
         } else {
             console.error(`Η παραγγελία ${order.id} ΔΕΝ στάλθηκε επιτυχώς στο SoftOne. Response: ${decodedResponse}`);
         }
 
-        return softOneResponse;
+        storeSoftoneOrder(order, softoneResponse);     // (χωρίς await)
+        return softoneResponse;
     } catch (error) {
         console.error('Error sending order to SoftOne:', error);
-        return { success: false, error: error.message };
+        const errorResponse = { success: false, error: error.message };
+        storeSoftoneOrder(order, errorResponse);     // (χωρίς await)
+        return errorResponse;
     }
 }
 
