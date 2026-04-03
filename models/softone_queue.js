@@ -27,6 +27,10 @@ const SoftoneQueue = db.define('SoftoneQueue', {
     timestamps: true,
     createdAt: 'createdAt',
     updatedAt: 'lastAttemptAt',         // lastAttemptAt field is actually the updatedAt
+    indexes: [
+        { fields: ['orderId'] },
+        { fields: ['status'] },
+    ],
 });
 
 

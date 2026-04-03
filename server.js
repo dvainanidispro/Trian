@@ -24,6 +24,9 @@ server.use(express.json());
 // Database
 const {db, dbTest} = require('./models/database.js');
 
+// Order Queue (retry παραγγελιών προς SoftOne), δηλώνει το setInterval
+require('./controllers/orderQueue.js');
+
 
 
 

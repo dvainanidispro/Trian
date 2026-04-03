@@ -91,7 +91,7 @@ function proccessSoftOneOrder(order) {
 
 
 
-/** Καταχώριση αποτελέσματος αποστολής στο softone_queue */
+/** Καταχώριση αποτελέσματος αποστολής στο softone_queue δημιουργώντας νέα εγγραφή */
 async function storeSoftoneOrder(order, softoneResponse) {
     return softOneQueue.create({
         orderId: order.id,
@@ -106,6 +106,7 @@ async function storeSoftoneOrder(order, softoneResponse) {
 /** 
  * Αποστολή παραγγελίας στο SoftOne 
  * @param {Object} order - Το αντικείμενο παραγγελίας που θα σταλεί στο SoftOne. Η συνάρτηση αναλαμβάνει να το διαμορφώσει κατάλληλα πριν την αποστολή.
+ * @param {boolean} retry - Αν false (default), πρόκειται για πρώτη αποστολή: δημιουργεί πάντα νέα εγγραφή στο queue. Αν true, πρόκειται για retry από το orderQueue: δεν δημιουργεί νέα εγγραφή και κάνει re-throw αν ο server είναι down.
  * @return {Object} Η απάντηση του SoftOne. Το JSON αντικείμενο που επιστρέφει το SoftOne έχει την εξής μορφή:
  * {
  *   "success": true,
@@ -114,9 +115,8 @@ async function storeSoftoneOrder(order, softoneResponse) {
  *   "errors": ["array που προσθέτουμε εμείς αν δούμε ότι κάποια από τις απαντήσεις περιέχει 'ESoftOneError'"],
  * }
  * */
-async function sendOrderToSoftOne(order) {
-    try{
-
+async function sendOrderToSoftOne(order, retry = false) {
+    try {
         let softOneOrder = proccessSoftOneOrder(order);
 
         const payload = {
@@ -149,15 +149,17 @@ async function sendOrderToSoftOne(order) {
         if (softoneResponse.success) {
             console.log(`\x1b[36mΗ παραγγελία ${order.id} στάλθηκε επιτυχώς στο SoftOne. Αριθμοί παραστατικών: ${softoneResponse.data.join(', ')} \x1b[0m`);
         } else {
-            console.error(`Η παραγγελία ${order.id} ΔΕΝ στάλθηκε επιτυχώς στο SoftOne. Response: ${decodedResponse}`);
+            console.error(`Η παραγγελία ${order.id} ΔΕΝ στάλθηκε επιτυχώς στο SoftOne. Response: ${JSON.stringify(softoneResponse)}`);
         }
 
-        storeSoftoneOrder(order, softoneResponse);     // (χωρίς await)
+        if (!retry) { storeSoftoneOrder(order, softoneResponse) };     // (χωρίς await)
         return softoneResponse;
     } catch (error) {
+        // Αν δεν υπάρχει καθόλου απάντηση (server down), κάνουμε re-throw ώστε το orderQueue να σταματήσει το loop
+        if (retry && !error.response) throw error;
         console.error('Error sending order to SoftOne:', error);
         const errorResponse = { success: false, error: error.message };
-        storeSoftoneOrder(order, errorResponse);     // (χωρίς await)
+        if (!retry) { storeSoftoneOrder(order, errorResponse) };     // (χωρίς await)
         return errorResponse;
     }
 }
