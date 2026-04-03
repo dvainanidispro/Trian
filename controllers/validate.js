@@ -2,8 +2,8 @@
 
 /** Σταθερά κόστη e-shop */
 let costOf = {
-    /** H τιμή της κάρτας για τα ζευγάρια φακών TRIAN με retail */
-    card: 1,
+    /** H τιμή της κάρτας ανά κατασκευαστή για ζευγάρια φακών με retail */
+    card: { trian: 1, tokai: 0.1 },
     /** Το κόστος αντικαταβολής */
     cod: 1.9,
 
@@ -65,7 +65,8 @@ validate.cart = (cart,customer=null) =>{
             if (lensL) { cartItem.item.L['Τιμή'] = lensL['Τιμή'] }
             // Επιπλέον υπολογισμοί και χρεώσεις για ζευγάρια TRIAN
             cartItem.item['Παράδοση'] = maxDelivery([cartItem.item.R['Παράδοση'], cartItem.item.L['Παράδοση']]);    // Προσθήκη πεδίου
-            let cardPrice = (cartItem.item.L["Κατασκευαστής"]=="TRIAN" && cartItem.item.retail.length>1) ? costOf.card : 0;
+            const manufacturer = cartItem.item.L["Κατασκευαστής"]?.toLowerCase();
+            let cardPrice = (cartItem.item.retail.length>1) ? (costOf.card?.[manufacturer] ?? 0) : 0;
             cartItem.item.cardPrice = cardPrice;
             cartItem.item['Τιμή'] = euro( 
                 + parseFloat(cartItem.item.R['Τιμή']) 
