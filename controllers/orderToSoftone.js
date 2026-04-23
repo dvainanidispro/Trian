@@ -14,6 +14,7 @@ const keyMap = {
     "Τίτλος": "SOTITLE",
     "email": "EMAIL",
     "Τρ.Αποστολής": "SHIPMENT",     // Το απαιτεί το SoftOne
+    "Διεύθυνση": "ADDRESS",       // Το απαιτεί το SoftOne
 
     // frames
     "Περιγραφή": "NAME",
@@ -119,6 +120,11 @@ async function sendOrderToSoftOne(order, retry = false) {
     try {
         let softOneOrder = proccessSoftOneOrder(order);
 
+        if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+            // console.log(JSON.stringify(softOneOrder, null, 2));
+            return { success: true, data: ['SOFTONEORDERURL is not called in DEVELOPMENT environment'] };
+        }
+
         const payload = {
             clientID: process.env.CLIENTID,
             data: softOneOrder
@@ -126,7 +132,8 @@ async function sendOrderToSoftOne(order, retry = false) {
 
         const response = await axios.post(process.env.SOFTONEORDERURL, payload, {
             responseType: 'arraybuffer',
-            responseEncoding: 'binary'
+            responseEncoding: 'binary',
+            // timeout: 20000,         // Χρονικό όριο 20 δευτερόλεπτα.
         });
         const decoder = new TextDecoder('ISO-8859-7');
         const decodedResponse = decoder.decode(response.data);

@@ -249,7 +249,7 @@ let getCustomer = (email) => {
 
     // 1. Ψάξε για υποκατάστημα με αυτό το email. 
     // Είναι υποκατάστημα αν έχει διαφορετικό email από το email του κύριου καταστήματος
-    let brunch = Data.customers.find( customer=>customer['Email Υπ/τος']==email && customer['email']!=customer['Email Υπ/τος'] ) ?? null; 
+    let brunch = Data.customers.find( customer => customer['Email Υπ/τος']==email && customer['email']!=customer['Email Υπ/τος'] ) ?? null; 
     if (brunch) {
         brunch['email']=brunch['Email Υπ/τος'];
         brunch['Πόλη']=brunch['Πόλη Υπ/τος'];
