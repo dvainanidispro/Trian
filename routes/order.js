@@ -9,6 +9,7 @@ const { validate, validateSystemToken } = require('../controllers/validate.js');
 const { getCustomer }                   = require('../controllers/SoftOne.js');
 const { Op }                            = require('sequelize');
 const Order                             = require('../models/order.js');
+const SoftoneQueue                      = require('../models/softone_queue.js');
 const { sendOrderToSoftOne }            = require('../controllers/orderToSoftone.js');
 
 let initialIntervalInSeconds = process.env.INITIALINTERVAL??20; 
@@ -128,8 +129,21 @@ router.get(['/profile','/customer','/me'], validateFirebaseToken, (req,res) => {
 
 router.get(['/history','/orders'], validateFirebaseToken, async (req,res) => {
     const limit = orderLimit;
-    let orders = await Order.findAll({ where: { customer: req.customer.email }, order: [['orderDate', 'DESC']], limit }).catch(err=>{console.error(err)});
-    res.json(orders);
+    // Φέρε τα orders του πελάτη μαζί με τα responses από το SoftOne (αν υπάρχουν)
+    let orders = await Order.findAll({
+        where: { customer: req.customer.email },
+        order: [['orderDate', 'DESC']],
+        limit,
+        include: [{ model: SoftoneQueue, attributes: ['response'] }]
+    }).catch(err=>{console.error(err)});
+    // Βάλε το SoftoneQueue?.response?.data στο order.invoices
+    const result = orders.map(o => {
+        const json = o.toJSON();
+        json.invoices = json.SoftoneQueue?.response?.data ?? [];
+        delete json.SoftoneQueue;
+        return json;
+    });
+    res.json(result);
 });
 
 

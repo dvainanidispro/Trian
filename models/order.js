@@ -40,9 +40,13 @@ const Order = db.define('Order', {
 });
 
 
-// Alter the table in database
+// Alter the table in database (δεν λειτουργεί πλέον σωστά στον πίνακα orders)
 // Order.sync({ alter: true }).then(() => {
 //     console.log(`\x1b[32m Ο πίνακας orders είναι ΟΚ. \x1b[0m`);
 // });
+
+// Δεν έχει γίνει sync το παρακάτω. Δηλώνεται ώστε το sequelize να κάνει include.
+const SoftoneQueue = require('./softone_queue.js');
+Order.hasOne(SoftoneQueue, { foreignKey: 'orderId', sourceKey: 'orderId' });
 
 module.exports = Order;
