@@ -6,7 +6,15 @@ let costOf = {
     card: { trian: 1, tokai: 0.1 },
     /** Το κόστος αντικαταβολής */
     cod: 1.9,
+};
 
+/** Έκπτωση. Αναγράφεται το ποσοστό % της έκπτωσης χωρίς να υπολογίζεται η τελική τιμή
+ * Αργότερα θα υπολογίζει την επιπλέον έκπτωση με βάση τον πελάτη και το προϊόν.
+ */
+let itemDiscount = (item=null,customer=null) => {
+    let basicDiscount = 5;
+    let custumerItemDiscount = 0;
+    return basicDiscount + custumerItemDiscount;
 };
 
 /** Returns a number with 2 digits */
@@ -55,15 +63,17 @@ validate.cart = (cart,customer=null) =>{
         if (cartItem.type==='frame') {
             let frame = DataForCustomers.frames.find(frame=>frame['Κωδικός']===cartItem.item['Κωδικός']);
             if (frame) { cartItem.item['Τιμή'] = frame['Τιμή'] }
+            cartItem.discount = itemDiscount(cartItem.item, customer);
         } else if (cartItem.type==='lens') {
             let lens = DataForCustomers.lens.find(lens=>lens['Κωδικός']===cartItem.item['Κωδικός']);
             if (lens) { cartItem.item['Τιμή'] = lens['Τιμή'] }
+            cartItem.discount = itemDiscount(cartItem.item, customer);
         } else if (cartItem.type==='pair'){
             let lensR = DataForCustomers.lens.find(lens=>lens['Κωδικός']===cartItem.item.R['Κωδικός']);
             if (lensR) { cartItem.item.R['Τιμή'] = lensR['Τιμή'] }
             let lensL = DataForCustomers.lens.find(lens=>lens['Κωδικός']===cartItem.item.L['Κωδικός']);
             if (lensL) { cartItem.item.L['Τιμή'] = lensL['Τιμή'] }
-            // Επιπλέον υπολογισμοί και χρεώσεις για ζευγάρια TRIAN
+            // Επιπλέον υπολογισμοί και χρεώσεις για ζευγάρια
             cartItem.item['Παράδοση'] = maxDelivery([cartItem.item.R['Παράδοση'], cartItem.item.L['Παράδοση']]);    // Προσθήκη πεδίου
             const manufacturer = cartItem.item.L["Κατασκευαστής"]?.toLowerCase();
             let cardPrice = (cartItem.item.retail.length>1) ? (costOf.card?.[manufacturer] ?? 0) : 0;
@@ -73,6 +83,7 @@ validate.cart = (cart,customer=null) =>{
                 + parseFloat(cartItem.item.L['Τιμή'])
                 + cardPrice
             );
+            cartItem.discount = itemDiscount(cartItem.item.L, customer);
         }
         return cartItem;
     });
@@ -81,7 +92,7 @@ validate.cart = (cart,customer=null) =>{
 
 /** Επιστέφει το σύνολο του καλαθιού με βάση τα περιεχόμενά του */
 let cartTotal = (cart) => {
-    return cart.reduce((total, item) => total + (parseFloat(item.item['Τιμή']) * item.quantity), 0);
+    return cart.reduce((total, cartItem) => total + (parseFloat(cartItem.item['Τιμή']) * cartItem.quantity), 0);
 };
 
 

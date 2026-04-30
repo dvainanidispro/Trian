@@ -75,7 +75,7 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     order.id = orderId.new();                           // new order id
     order.customer = req.customer;                      // customer validation
     // To body.οτιδήποτε δεν έρχεται validated!            
-    order.cart = validate.cart(req.body.cart);          // cart validation
+    order.cart = validate.cart(req.body.cart, req.customer);          // cart validation
     order.costs = validate.costs(req.body.costs, order.cart, req.customer);         // costs validation       
     order.notes = req.body.notes;   
     order.reference = req.body.reference;

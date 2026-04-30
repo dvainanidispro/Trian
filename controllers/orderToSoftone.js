@@ -16,11 +16,10 @@ const keyMap = {
     "Τρ.Αποστολής": "SHIPMENT",     // Το απαιτεί το SoftOne
     "Διεύθυνση": "ADDRESS",       // Το απαιτεί το SoftOne
 
-    // frames
+    // items
+    "discount": "discprcweb",
     "Περιγραφή": "NAME",
-    // "Τιμή": "price",
     "Τιμή": "PRICEW",
-    // "Παράδοση": "delivery", // SoftOne: "C5.NAME"
     "Παράδοση": "UTBL01",
     
     // lens
@@ -121,7 +120,7 @@ async function sendOrderToSoftOne(order, retry = false) {
         let softOneOrder = proccessSoftOneOrder(order);
 
         if (process.env.ENVIRONMENT === "DEVELOPMENT") {
-            // console.log(JSON.stringify(softOneOrder, null, 2));
+            console.log(JSON.stringify(softOneOrder, null, 2));
             return { success: true, data: ['SOFTONEORDERURL is not called in DEVELOPMENT environment'] };
         }
 
