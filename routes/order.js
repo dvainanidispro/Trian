@@ -15,6 +15,13 @@ const { sendOrderToSoftOne }            = require('../controllers/orderToSoftone
 let initialIntervalInSeconds = process.env.INITIALINTERVAL??20; 
 let orderLimit = process.env.ORDERLIMIT??50;   
 
+const MinimumTimeoutBetweenCustomerOrders = 30 * 1000;  // 30 δευτερόλεπτα
+// Θα χρησιμοποιούνταν για αποφυγή αποστολής διπλής ίδιας παραγγελίας. Δεν έχει υλοποιηθεί. 
+// Χρειάζεται uuid από browser (πχ req.body.uuid) και αποθήκευση σε Map για μισό λεπτό.
+// Δεν αρκεί μόνο ο έλεγχος με req.customer['email']. 
+// Επίσης, καθυστέρηση πχ 3 δευτερολέπτων κατά την απάντηση της απόρριψης ή αποστολή fake αποδοχής αν έχει αποθηκευτεί η σωστή, 
+// μην τυχόν και φτάσει στον browser πρώτα η απόρριψη και μετά η αποδοχή της παραγγελίας. 
+
 
 
 
