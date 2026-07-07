@@ -58,8 +58,9 @@ let validate = {};
  * @param {array} cart - Το καλάθι αγορών προς επαλήθευση
  * @param {object} customer - Ο πελάτης που κάνει την αγορά (προς το παρόν ανενεργό)
 */
-validate.cart = (cart,customer=null) =>{
-    let validatedCart = cart.map(cartItem=>{
+validate.cart = (cart=[],customer=null) =>{
+    // Το cart=[] στον ορισμό της συνάρτησης (από πάνω) καλύπτει μόνο το undefined, όχι το null, για αυτό βάζουμε cart??[] παρακάτω.
+    let validatedCart = (cart ?? []).map(cartItem=>{    
         if (cartItem.type==='frame') {
             let frame = DataForCustomers.frames.find(frame=>frame['Κωδικός']===cartItem.item['Κωδικός']);
             if (frame) { cartItem.item['Τιμή'] = frame['Τιμή'] }
