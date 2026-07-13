@@ -13,8 +13,8 @@ const server = express();
 var cors = require('cors');
 
 // Status monitor
-let statusMonitor = require('./controllers/status.js');
-server.use(statusMonitor.middleware);
+// let statusMonitor = require('./controllers/status.js');
+// server.use(statusMonitor.middleware);
 
 // grab post/put variables, json objects and send static files
 server.use(express.urlencoded({extended: false})); 
@@ -261,7 +261,7 @@ server.get('/api/update/:token', validateSystemToken, (req,res) => {
     res.send('Λήφθηκε εντολή για ενημέρωση πελατών και προϊόντων. Η ενημέρωση θα ολοκληρωθεί στα επόμενα λεπτά.');
 });
 
-server.get('/status/:token', validateSystemToken, statusMonitor.pageRoute);
+// server.get('/status/:token', validateSystemToken, statusMonitor.pageRoute);
 
 
 

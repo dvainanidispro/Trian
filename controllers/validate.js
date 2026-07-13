@@ -8,13 +8,15 @@ let costOf = {
     cod: 1.9,
 };
 
-/** Έκπτωση. Αναγράφεται το ποσοστό % της έκπτωσης χωρίς να υπολογίζεται η τελική τιμή
+/** 
+ * Έκπτωση. Αναγράφεται το ποσοστό % της έκπτωσης χωρίς να υπολογίζεται η τελική τιμή
  * Αργότερα θα υπολογίζει την επιπλέον έκπτωση με βάση τον πελάτη και το προϊόν.
  */
 let itemDiscount = (item=null,customer=null) => {
+    if (!customer || !item) { return 0 }
     let basicDiscount = 5;
-    let custumerItemDiscount = 0;
-    return basicDiscount + custumerItemDiscount;
+    let custοmerItemDiscount = 0;
+    return basicDiscount + custοmerItemDiscount;
 };
 
 /** Returns a number with 2 digits */
@@ -75,16 +77,16 @@ validate.cart = (cart=[],customer=null) =>{
             let lensL = DataForCustomers.lens.find(lens=>lens['Κωδικός']===cartItem.item.L['Κωδικός']);
             if (lensL) { cartItem.item.L['Τιμή'] = lensL['Τιμή'] }
             // Επιπλέον υπολογισμοί και χρεώσεις για ζευγάρια
-            cartItem.item['Παράδοση'] = maxDelivery([cartItem.item.R['Παράδοση'], cartItem.item.L['Παράδοση']]);    // Προσθήκη πεδίου
+            cartItem.item['Παράδοση'] = maxDelivery([cartItem.item.R['Παράδοση'], cartItem.item.L['Παράδοση']]);    // Προσθήκη πεδίου Παράδοση
             const manufacturer = cartItem.item.L["Κατασκευαστής"]?.toLowerCase();
             let cardPrice = (cartItem.item.retail.length>1) ? (costOf.card?.[manufacturer] ?? 0) : 0;
-            cartItem.item.cardPrice = cardPrice;
-            cartItem.item['Τιμή'] = euro( 
+            cartItem.item.cardPrice = cardPrice;        // Προσθήκη πεδίου cardPrice
+            cartItem.item['Τιμή'] = euro(               // Προσθήκη πεδίου Τιμή
                 + parseFloat(cartItem.item.R['Τιμή']) 
                 + parseFloat(cartItem.item.L['Τιμή'])
                 + cardPrice
             );
-            cartItem.discount = itemDiscount(cartItem.item.L, customer);
+            cartItem.discount = itemDiscount(cartItem.item.L, customer);        // Προσθήκη πεδίου discount (με βάση τον αριστερό φακό)
         }
         return cartItem;
     });
