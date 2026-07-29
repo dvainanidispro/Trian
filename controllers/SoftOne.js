@@ -7,7 +7,7 @@
 // require('dotenv').config();
 const axios                     = require('axios');
 let { uniqueOf, treeOf }        = require('./utilities.js');
-let { sendErrorLoadingEmail }   = require('./errorloading.js');
+let { sendErrorLoadingEmail }   = require('./notifications.js');
 
 
 

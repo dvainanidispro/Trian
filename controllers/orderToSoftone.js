@@ -120,7 +120,7 @@ async function sendOrderToSoftOne(order, retry = false) {
         let softOneOrder = proccessSoftOneOrder(order);
 
         if (process.env.ENVIRONMENT === "DEVELOPMENT") {
-            console.log(JSON.stringify(softOneOrder, null, 2));
+            console.debug(JSON.stringify(softOneOrder, null, 2));
             return { success: true, data: ['SOFTONEORDERURL is not called in DEVELOPMENT environment'] };
         }
 
@@ -150,6 +150,11 @@ async function sendOrderToSoftOne(order, retry = false) {
             const isError = s => s.includes('ESoftOneError') || s.trim().includes(' ');
             softoneResponse.errors = softoneResponse.data.filter(s => isError(s));
             softoneResponse.data = softoneResponse.data.filter(s => !isError(s));
+        }
+
+        // Επιτυχία απαιτεί τη δημιουργία τουλάχιστον ενός παραστατικού.
+        if (!softoneResponse.data?.length) {
+            softoneResponse.success = false;
         }
 
         if (softoneResponse.success) {
