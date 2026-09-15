@@ -166,9 +166,9 @@ async function sendOrderToSoftOne(order, retry = false) {
         if (!retry) { storeSoftoneOrder(order, softoneResponse) };     // (χωρίς await)
         return softoneResponse;
     } catch (error) {
-        // Αν δεν υπάρχει καθόλου απάντηση (server down), κάνουμε re-throw ώστε το orderQueue να σταματήσει το loop
+        // Αν δεν υπάρχει καθόλου απάντηση (server down -> error.response undefined), κάνουμε re-throw ώστε το orderQueue να σταματήσει το loop
         if (retry && !error.response) throw error;
-        console.error('Error sending order to SoftOne:', error);
+        console.error('Error sending order to SoftOne:', error.message);
         const errorResponse = { success: false, error: error.message };
         if (!retry) { storeSoftoneOrder(order, errorResponse) };     // (χωρίς await)
         return errorResponse;

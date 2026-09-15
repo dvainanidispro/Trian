@@ -22,7 +22,7 @@ async function processQueue() {
         pendingEntries = await softOneQueue.findAll({
             where: {
                 status: 'pending',
-                attempts: { [Op.lt]: maxAttempts }
+                // attempts: { [Op.lt]: maxAttempts }
             }
         });
     } catch (err) {

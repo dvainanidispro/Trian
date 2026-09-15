@@ -84,8 +84,8 @@ exports.multiFilter = multiFilter;
 
 let unique = (arr) => [...new Set(arr)];
 
-/** It should be called uniqueValuesByKey. From an array of similar objects, it extracts the unique values found for the specific key */
-let uniqueKeys = (arrayOfObjects, key) => {
+/** From an array of similar objects, it extracts the unique values found for the specific key */
+let uniqueValuesByKey = (arrayOfObjects, key) => {
     return unique( arrayOfObjects.map(item=>item[key]) ).sort();
 };
 
@@ -93,10 +93,10 @@ exports.treeOf = (arrayOfObjects, keys) => {
     let tree = {};
     tree[keys[0]] = {};
     tree[keys[1]] = {};
-    let uniqueOf1 = uniqueKeys(arrayOfObjects,keys[0]);
+    let uniqueOf1 = uniqueValuesByKey(arrayOfObjects,keys[0]);
     tree[keys[0]] = uniqueOf1;
     uniqueOf1.forEach(item => {
-        let uniqueOf2 = uniqueKeys(multiFilter(arrayOfObjects,{[keys[0]]:item}),keys[1]);
+        let uniqueOf2 = uniqueValuesByKey(multiFilter(arrayOfObjects,{[keys[0]]:item}),keys[1]);
         tree[keys[1]][item] = uniqueOf2;
     });
     return tree;

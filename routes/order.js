@@ -81,6 +81,7 @@ router.post(['/'], consoleLogUser, validateFirebaseToken, (req,res) => {
     //# Βήμα 1: Επικύρωση των δεδομένων της παραγγελίας
     let order = {};
     order.id = orderId.new();                           // new order id
+    order.date = new Date();                            // χρήση μόνο για το SoftOne, όχι για τη βάση δεδομένων
     order.customer = req.customer;                      // customer validation
     // To body.οτιδήποτε δεν έρχεται validated!            
     order.cart = validate.cart(req.body.cart, req.customer);          // cart validation
