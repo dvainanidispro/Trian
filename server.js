@@ -35,7 +35,7 @@ require('./controllers/orderQueue.js');
 ///////////////////////////////         VARIABLES & FUNCTIONS         ////////////////////////////////
 
 // SoftOneData
-let {SoftOne, Data, PublicData, DataForCustomers, getCustomer} = require('./controllers/SoftOne.js');
+let {SoftOne, Data, getCustomer} = require('./controllers/SoftOne.js');
 
 // Middleware
 let {validateSystemToken, validate} = require('./controllers/validate.js');
@@ -163,40 +163,10 @@ server.get(['/api/profile','/profile'], validateFirebaseToken, (req,res) => {
 ////////////////////////////////      API ROUTES FOR TESTING      ///////////////////////////////////
 
 
-/*
-server.get(['/api/frames','/api/frames.json'], (req,res) => {
-    res.json(DataForCustomers.frames);
-});
 
-server.get(['/api/lens/tokai','/api/lens/tokai.json'], (req,res) => {
-    res.json(DataForCustomers.lensTokai);
-});
+const testRouter = require('./routes/test.js');
+server.use('/api/test', testRouter);
 
-server.get(['/api/lens/trian','/api/lens/trian.json'], (req,res) => {
-    res.json(DataForCustomers.lensTrian);
-});
-
-server.get('/api/lens', (req,res) => {
-    res.json(PublicData.lens);
-});
-
-server.get(['/api/unique/frames','/api/unique/frames.json'], (req,res) => {
-    res.json(PublicData.uniqueOfFrames);
-});
-
-server.get(['/api/unique/lens','/api/unique/lens.json'], (req,res) => {
-    res.json(PublicData.uniqueOfLens);
-});
-
-server.get(['/api/unique/lens-trian','/api/unique/lens-trian.json'], (req,res) => {
-    res.json(PublicData.uniqueOfLensTrian);
-});
-
-server.get(['/api/unique/lens-tokai','/api/unique/lens-tokai.json'], (req,res) => {
-    res.json(PublicData.uniqueOfLensTokai);
-});
-
-*/
 
 
 ////////////////////////////////        REALTIME "SHOW" ROUTES         //////////////////////////////////

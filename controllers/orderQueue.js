@@ -1,6 +1,6 @@
 'use strict';
 
-const { Op } = require('sequelize');
+// const { Op } = require('sequelize');
 const softOneQueue = require('../models/softone_queue.js');
 const { sendOrderToSoftOne } = require('./orderToSoftone.js');
 const { sendOrderErrorEmail } = require('./notifications.js');
