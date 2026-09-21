@@ -12,7 +12,7 @@ const Order                             = require('../models/order.js');
 const SoftoneQueue                      = require('../models/softone_queue.js');
 const { sendOrderToSoftOne }            = require('../controllers/orderToSoftone.js');
 
-let initialIntervalInSeconds = process.env.INITIALINTERVAL??20; 
+let initialIntervalInSeconds = process.env.INITIALINTERVAL??10; 
 let orderLimit = process.env.ORDERLIMIT??50;   
 
 const MinimumTimeoutBetweenCustomerOrders = 30 * 1000;  // 30 δευτερόλεπτα
@@ -58,7 +58,7 @@ setTimeout(async _=>{
     let todaysOrders = await Order.findAll({ where: { orderDate: {[Op.gt]: startOfToday} } });
     orderId.todaysOrders = todaysOrders.map(order=>order.orderId);
     // console.debug('Σημερινές παραγγελίες ως τώρα: ' + orderId.todaysOrders);
-},initialIntervalInSeconds*1.8*1000);   // 1.8: magic number (κακώς), θέλουμε μεγαλύτερο από 1
+},initialIntervalInSeconds*1.2*1000);   // 1.2 - magic number (κακώς), θέλουμε μεγαλύτερο από 1
 
 
 /** Καταγράφει το email που υποστηρίζει ο πελάτης ότι έχει. Για λόγους troubleshooting, αν πχ το token δεν λειτουργήσει σωστά. */ 

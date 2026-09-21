@@ -34,6 +34,7 @@ let Data = {
     lens: [],
     frames: [],
     customerEmails: [],
+    colors: [],
 };
 
 
@@ -263,6 +264,7 @@ SoftOne.colors = async function(){
     let response = await SoftOne.fetch('ColorsInfo',false);
     try{
         let colors = response['rows'];
+        Data.colors = colors;
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} χρώματα`);
 

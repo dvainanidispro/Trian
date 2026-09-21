@@ -45,7 +45,6 @@ const {validateFirebaseToken} = require('./controllers/firebase.js');
 
 // Other variables
 let environment = process.env.ENVIRONMENT;
-let initialIntervalInSeconds = process.env.INITIALINTERVAL??20;    // in seconds
 let refreshIntervalInHours = process.env.REFRESHINTERVAL??24;   // in hours
 /** When this is true, an update is being performed, so no other update can be done simultaneously */
 let updatingNow = false;    // to prevent multiple simultaneous updates from SoftOne
@@ -72,36 +71,42 @@ server.use(cors({
 
 
 
-//* fetch Customers, then Frames, then Lens, in intervals
+//* fetch Customers, Frames, Lens and Colors sequentially
 let fetchEverythingFromSoftOne = async function(once=false) {
     if (updatingNow) {return} 
     updatingNow = true;    // prevent multiple simultaneous updates from SoftOne
-    await delay(initialIntervalInSeconds);
-    console.log("Έναρξη λήψης πελατών και προϊόντων από το SoftOne");
-    SoftOne.customers();
-    if (!once) {setInterval(SoftOne.customers,1000*60*60*refreshIntervalInHours)}
-    await delay(initialIntervalInSeconds);
-    SoftOne.frames();
-    if (!once) {setInterval(SoftOne.frames,1000*60*60*refreshIntervalInHours)}
-    await delay(initialIntervalInSeconds);
-    SoftOne.lens();
-    if (!once) {setInterval(SoftOne.lens,1000*60*60*refreshIntervalInHours)}
-    await delay(initialIntervalInSeconds);
-    SoftOne.colors();
-    if (!once) {setInterval(SoftOne.colors,1000*60*60*refreshIntervalInHours)}
-    await delay(initialIntervalInSeconds*1.3);
-    updatingNow = false;
-    dataOK = (Data.customers.length && Data.frames.length && Data.lens.length);   // Data is OK, if we have data from this or previous fetch.
-    if (dataOK) {
-        console.log(`\x1b[32m Η υπηρεσία είναι έτοιμη! \x1b[0m`);
-    } else {
-        console.error(`\x1b[31m Η υπηρεσία δεν είναι έτοιμη. To deployment απέτυχε! \x1b[0m`);
+    const separationSeconds = 1;
+    try {
+
+        await delay(separationSeconds);
+        console.log("Έναρξη λήψης πελατών και προϊόντων από το SoftOne");
+
+        const requests = [
+            SoftOne.customers,
+            SoftOne.frames,
+            SoftOne.lens,
+            SoftOne.colors,
+        ];
+
+        for (let i = 0; i < requests.length; i++) { // forEach can't await
+            await requests[i]();
+            if (i < requests.length - 1) {await delay(separationSeconds)}
+        }
+
+        // Data is OK, if we have data from this or previous fetch.
+        dataOK = (Data.customers.length && Data.frames.length && Data.lens.length && Data.colors.length);   
+        if (dataOK) {
+            console.log(`\x1b[32m Η υπηρεσία είναι έτοιμη! \x1b[0m`);
+        } else {
+            console.error(`\x1b[31m Η υπηρεσία δεν είναι έτοιμη. To deployment απέτυχε! \x1b[0m`);
+        }
+    } finally {
+        updatingNow = false;
     }
 
-    // setTimeout(SoftOne.customers,initialIntervalInSeconds*1*1000);
-    // setTimeout(SoftOne.frames,initialIntervalInSeconds*2*1000);
-    // setTimeout(SoftOne.lens,initialIntervalInSeconds*3*1000);
-
+    if (!once) {
+        setInterval(() => fetchEverythingFromSoftOne(true), 1000*60*60*refreshIntervalInHours);
+    }
 }
 dbTest(db).then(_=>{
     fetchEverythingFromSoftOne();
