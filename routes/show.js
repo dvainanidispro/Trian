@@ -45,6 +45,16 @@ router.get('/:token/lens', validateSystemToken, async (req,res) => {
     }
 });
 
+router.get('/:token/colors', validateSystemToken, async (req,res) => {
+    let dataObj = await SoftOne.fetch('ColorsInfo',true);
+    try{
+        let data = dataObj['rows'];
+        res.send(prettyJSON(data));
+    } catch (error){
+        res.send("Error loading colors from SoftOne");
+    }
+});
+
 
 
 ///////////////////////////////////         EXPORTS         /////////////////////////////////////

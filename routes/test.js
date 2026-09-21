@@ -12,6 +12,10 @@ const {PublicData, DataForCustomers} = require('../controllers/SoftOne.js');
 const testRoutesEnabled = process.env.TESTROUTES === 'true' || process.env.TESTROUTES === true;
 
 if (testRoutesEnabled) {
+    router.get(['/colors', '/colors.json'], (req,res) => {
+        res.json(PublicData.colors);
+    });
+
     router.get(['/frames', '/frames.json'], (req,res) => {
         res.json(DataForCustomers.frames);
     });

@@ -86,6 +86,9 @@ let fetchEverythingFromSoftOne = async function(once=false) {
     await delay(initialIntervalInSeconds);
     SoftOne.lens();
     if (!once) {setInterval(SoftOne.lens,1000*60*60*refreshIntervalInHours)}
+    await delay(initialIntervalInSeconds);
+    SoftOne.colors();
+    if (!once) {setInterval(SoftOne.colors,1000*60*60*refreshIntervalInHours)}
     await delay(initialIntervalInSeconds*1.3);
     updatingNow = false;
     dataOK = (Data.customers.length && Data.frames.length && Data.lens.length);   // Data is OK, if we have data from this or previous fetch.

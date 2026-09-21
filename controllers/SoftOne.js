@@ -53,6 +53,7 @@ let PublicData = {
     treeOfLensTokai: {},
     treeOfLensTrianAlt: {},
     treeOfLensTokaiAlt: {},
+    colors: [],
 };
 
 
@@ -180,6 +181,8 @@ SoftOne.lens = async function(){
         Data.lens = lens;
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} φακοί`);
+        // console.log('totalcount:', response.totalcount);  //TODO: Remove this debug log
+        // console.log('rows.length:', response.rows.length);  //TODO: Remove this debug log
 
         PublicData.lens = lens.map(len => {
             return {
@@ -252,6 +255,28 @@ SoftOne.lens = async function(){
     }
     // run every this hours
     // setTimeout(SoftOne.lens,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
+};
+
+
+/** Function to fetch the colors information from SoftOne */
+SoftOne.colors = async function(){
+    let response = await SoftOne.fetch('ColorsInfo',false);
+    try{
+        let colors = response['rows'];
+        let count = response['totalcount'];
+        console.log(`Ήρθαν ${count} χρώματα`);
+
+        PublicData.colors = colors.map(color => {
+            return {
+                "id": color['Χρώμα'],
+                "name": color['Χρώμα Ονομασία'],
+                "darknessIds": color['Σκουρότητες']?.split(',').map(darkness => darkness.trim()) ?? [],
+                "darknesses": color['Σκουρότητες info'] ? JSON.parse(color['Σκουρότητες info']) : [],
+            };
+        });
+    }catch(error){
+        console.error("Error loading colors from SoftOne");
+    }
 };
 
 
