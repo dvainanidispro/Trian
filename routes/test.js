@@ -24,6 +24,10 @@ if (testRoutesEnabled) {
         res.json(DataForCustomers.lensTrian);
     });
 
+    router.get(['/lens/trian-plano', '/lens/trian-plano.json'], (req,res) => {
+        res.json(DataForCustomers.lensTrianPlano);
+    });
+
     router.get('/lens', (req,res) => {
         res.json(PublicData.lens);
     });

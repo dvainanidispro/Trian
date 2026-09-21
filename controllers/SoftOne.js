@@ -21,6 +21,8 @@ let refreshIntervalInHours = process.env.REFRESHINTERVAL??24;   // in hours
 let clientID = process.env.CLIENTID;
 let appId = (process.env.APPID).toString();
 
+const planoIdentifier = 'PLANO';
+
 
 /** The object that holds the fetch functions from SoftOne */
 let SoftOne = {};
@@ -40,10 +42,12 @@ let PublicData = {
     lens: [],
     lensTokai: [],
     lensTrian: [],
+    lensTrianPlano: [],
     frames: [],
     uniqueOfLens: {},
-    uniqueOfLensTrian: {},
     uniqueOfLensTokai: {},
+    uniqueOfLensTrian: {},
+    uniqueOfLensTrianPlano: {},
     uniqueOfFrames: {},
     treeOfLensTrian: {},
     treeOfLensTokai: {},
@@ -57,8 +61,9 @@ let DataForCustomers = {
     lens: [],
     lensTokai: [],
     lensTrian: [],
+    lensTrianPlano: [],
     frames: [],
-}
+};
 // Μελλοντικά, θα αποθηκεύονται ανά τιμολογιακή κατηγορία πελάτη πχ frames['Κατ1'], frames['Κατ2'] κλπ
 
 
@@ -82,7 +87,7 @@ SoftOne.fetch = async (sqlName,pagination=false) => {
             data: {
                 service: "SqlData",
                 clientID: clientID,
-                appId: "3002",
+                appId: appId,
                 SqlName: sqlName,
                 page: pagination==true ? 1 : 0,
                 rowofpage: pagination==true ? 100 : 9999999,
@@ -216,17 +221,25 @@ SoftOne.lens = async function(){
         });
 
         PublicData.lensTokai = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TOKAI");
-        PublicData.lensTrian = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN");
+        PublicData.lensTrian = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN" && lens['Σφαίρωμα']!==planoIdentifier);
+        PublicData.lensTrianPlano = PublicData.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN" && lens['Σφαίρωμα']===planoIdentifier);
         DataForCustomers.lensTokai = DataForCustomers.lens.filter(lens => lens['Κατασκευαστής']=="TOKAI");
-        DataForCustomers.lensTrian = DataForCustomers.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN");
+        DataForCustomers.lensTrian = DataForCustomers.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN" && lens['Σφαίρωμα']!==planoIdentifier);
+        DataForCustomers.lensTrianPlano = DataForCustomers.lens.filter(lens => lens['Κατασκευαστής']=="TRIAN" && lens['Σφαίρωμα']===planoIdentifier);
 
         let lensAttributes = ['Κατασκευαστής','Σφαίρωμα','Κύλινδρος','Διάθλ','Επίστρωση','Υλικό','Διάμετρος'];
         PublicData.uniqueOfLens = uniqueOf(PublicData.lens,lensAttributes);
-
+        
         lensAttributes = lensAttributes.filter(attribute => attribute!='Κατασκευαστής');
         PublicData.uniqueOfLensTokai = uniqueOf(PublicData.lensTokai,lensAttributes);
         PublicData.uniqueOfLensTrian = uniqueOf(PublicData.lensTrian,lensAttributes);
-        console.log(`Φακοί Trian: ${Object.keys(PublicData.lensTrian).length}, Φακοί Tokai: ${Object.keys(PublicData.lensTokai).length}`);
+        PublicData.uniqueOfLensTrianPlano = uniqueOf(PublicData.lensTrianPlano,lensAttributes);
+        
+        console.log([
+            `Φακοί Trian: ${Object.keys(PublicData.lensTrian).length}`,
+            `Φακοί Trian Plano: ${Object.keys(PublicData.lensTrianPlano).length}`,
+            `Φακοί Tokai: ${Object.keys(PublicData.lensTokai).length}`
+        ].join(', '));
 
         PublicData.treeOfLensTrian = treeOf(PublicData.lensTrian,["Σφαίρωμα","Κύλινδρος"]);
         PublicData.treeOfLensTokai = treeOf(PublicData.lensTokai,["Σφαίρωμα","Κύλινδρος"]);
