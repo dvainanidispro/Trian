@@ -16,6 +16,16 @@ exports.prettyJSON = Obj => /*html*/`
 
 //////////////////////////      UniqueOf
 
+/**
+ * Invalid values: null, undefined, boolean false, empty/whitespace-only strings,
+ * and the strings 'null' or 'undefined' (case-insensitive). The string 'false' is valid.
+ */
+const isValidFilterValue = value => {
+    if (value == null || value === false) return false;
+    const invalidFilterStrings = new Set(['', 'null', 'undefined', ' ']);
+    return ( typeof value !== 'string' ) || ( !invalidFilterStrings.has(value.trim().toLowerCase()) );
+};
+
 /** 
  * Recieves an array of objects, all with same properties, and returns an object, 
  * the properties of which are arrays of unique values found in the input array's objects.
@@ -38,7 +48,9 @@ exports.uniqueOf = (arrayOfObjects, arrayOfKeys=null) => {
     // Iterate over the array of objects
     arrayOfObjects.forEach(item => {
         keys.forEach(key => {
-            result[key].add(item[key]);
+            if (isValidFilterValue(item[key])) {
+                result[key].add(item[key]);
+            }
         });
     });
 
@@ -62,18 +74,18 @@ let multiFilter = (dataArray, filterObject, limit=null) => {
     // warning! do not change filterObject (because it is passed by reference)!
      let clearedFilter = {}; 
      for (const key in filterObject) {
-         if (filterObject[key]!=null && filterObject[key]!=="") { clearedFilter[key]=filterObject[key]};
+         if (isValidFilterValue(filterObject[key])) { clearedFilter[key]=filterObject[key] };
      }
  
    // apply filter
    let result = dataArray.filter(item => {  
        return Object.keys(clearedFilter).every(key => {
-           return filterObject[key] === item[key]
+            return clearedFilter[key] === item[key]
        });
    });
  
    // return entire result or limit it
-   return limit ? result.slice(0,limit-1) : result;
+   return limit ? result.slice(0,limit) : result;
  }; 
 exports.multiFilter = multiFilter;
 
@@ -86,17 +98,23 @@ let unique = (arr) => [...new Set(arr)];
 
 /** From an array of similar objects, it extracts the unique values found for the specific key */
 let uniqueValuesByKey = (arrayOfObjects, key) => {
-    return unique( arrayOfObjects.map(item=>item[key]) ).sort();
+    return unique(
+        arrayOfObjects.map(item=>item[key]).filter(isValidFilterValue)
+    ).sort();
 };
 
+/** Builds a tree structure from an array of objects based on the specified keys */
 exports.treeOf = (arrayOfObjects, keys) => {
+    const validItems = arrayOfObjects.filter(item =>
+        keys.every(key => isValidFilterValue(item[key]))
+    );
     let tree = {};
     tree[keys[0]] = {};
     tree[keys[1]] = {};
-    let uniqueOf1 = uniqueValuesByKey(arrayOfObjects,keys[0]);
+    let uniqueOf1 = uniqueValuesByKey(validItems,keys[0]);
     tree[keys[0]] = uniqueOf1;
     uniqueOf1.forEach(item => {
-        let uniqueOf2 = uniqueValuesByKey(multiFilter(arrayOfObjects,{[keys[0]]:item}),keys[1]);
+        let uniqueOf2 = uniqueValuesByKey(multiFilter(validItems,{[keys[0]]:item}),keys[1]);
         tree[keys[1]][item] = uniqueOf2;
     });
     return tree;

@@ -71,7 +71,7 @@ server.use(cors({
 
 
 
-//* fetch Customers, Frames, Lens and Colors sequentially
+//** Fetch Customers, Frames, Lens and Colors sequentially */ 
 let fetchEverythingFromSoftOne = async function(once=false) {
     if (updatingNow) {return} 
     updatingNow = true;    // prevent multiple simultaneous updates from SoftOne
