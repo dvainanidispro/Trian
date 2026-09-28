@@ -13,7 +13,7 @@ let {prettyJSON} = require('../controllers/utilities.js');
 
 
 router.get('/:token/customers', validateSystemToken, async (req,res) => {
-    let customersObj = await SoftOne.fetch('CustomerData',true);
+    let customersObj = await SoftOne.fetch('CustomerData',false);
     try{
         let customers = customersObj['rows'];  // τοπική μεταβλήτή, ώστε η global customers να μην αντικατασταθεί με μόνο 100 πελάτες 
         let count = customersObj['totalcount'];
@@ -46,12 +46,22 @@ router.get('/:token/lens', validateSystemToken, async (req,res) => {
 });
 
 router.get('/:token/colors', validateSystemToken, async (req,res) => {
-    let dataObj = await SoftOne.fetch('ColorsInfo',true);
+    let dataObj = await SoftOne.fetch('ColorsInfo',false);
     try{
         let data = dataObj['rows'];
         res.send(prettyJSON(data));
     } catch (error){
         res.send("Error loading colors from SoftOne");
+    }
+});
+
+router.get('/:token/services', validateSystemToken, async (req,res) => {
+    let dataObj = await SoftOne.fetch('ServicesData',false);
+    try{
+        let data = dataObj['rows'];
+        res.send(prettyJSON(data));
+    } catch (error){
+        res.send("Error loading services from SoftOne");
     }
 });
 

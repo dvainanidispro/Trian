@@ -16,8 +16,6 @@ let { sendErrorLoadingEmail }   = require('./notifications.js');
 ///////////////////////////////////            VARIABLES           /////////////////////////////////////
 
 
-/** how often the data will be refreshed */
-let refreshIntervalInHours = process.env.REFRESHINTERVAL??24;   // in hours
 let clientID = process.env.CLIENTID;
 let appId = (process.env.APPID).toString();
 
@@ -35,6 +33,7 @@ let Data = {
     frames: [],
     customerEmails: [],
     colors: [],
+    services: [],
 };
 
 
@@ -55,6 +54,7 @@ let PublicData = {
     treeOfLensTrianAlt: {},
     treeOfLensTokaiAlt: {},
     colors: [],
+    services: [],
 };
 
 
@@ -125,8 +125,6 @@ SoftOne.customers = async function() {
         console.error("Error loading customers from SoftOne");
         sendErrorLoadingEmail();
     }
-    // run every this hours
-    // setTimeout(SoftOne.customers,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
 };
 
 
@@ -170,7 +168,6 @@ SoftOne.frames = async function(){
     }catch(error){
         console.error("Error loading frames from SoftOne");
     }
-    // setTimeout(SoftOne.frames,1000*60*60*refreshIntervalInHours);         // refresh list every this hours
 };
 
 
@@ -254,8 +251,6 @@ SoftOne.lens = async function(){
     }catch(error){
         console.error("Error loading lens from SoftOne");
     }
-    // run every this hours
-    // setTimeout(SoftOne.lens,1000*60*60*refreshIntervalInHours);     // refresh customers list every 12 hours
 };
 
 
@@ -282,6 +277,24 @@ SoftOne.colors = async function(){
 };
 
 
+/** Function to fetch the services list from SoftOne */
+SoftOne.services = async function(){
+    let response = await SoftOne.fetch('ServicesData',false);
+    try{
+        let services = response['rows'];
+        Data.services = services;
+        PublicData.services = services;
+        let count = response['totalcount'];
+        console.log(`Ήρθαν ${count} υπηρεσίες`);
+    }catch(error){
+        console.error("Error loading services from SoftOne");
+    }
+};
+
+
+
+
+///////////////////////////////////     GET CUSTOMER BY EMAIL       /////////////////////////////////////
 
 /** Returns a customer object (or null), given their email */
 let getCustomer = (email) => {

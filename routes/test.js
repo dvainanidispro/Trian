@@ -9,9 +9,15 @@ const {PublicData, DataForCustomers} = require('../controllers/SoftOne.js');
 
 ////////////////////////////////        API ROUTES FOR TESTING      ///////////////////////////////////
 
+// Example: localhost/api/test/services
+
 const testRoutesEnabled = process.env.TESTROUTES === 'true' || process.env.TESTROUTES === true;
 
 if (testRoutesEnabled) {
+    router.get(['/services', '/services.json'], (req,res) => {
+        res.json(PublicData.services);
+    });
+
     router.get(['/colors', '/colors.json'], (req,res) => {
         res.json(PublicData.colors);
     });

@@ -71,30 +71,29 @@ server.use(cors({
 
 
 
-//** Fetch Customers, Frames, Lens and Colors sequentially */ 
+//** Fetch Customers, Frames, Lens, Colors and Services sequentially */
 let fetchEverythingFromSoftOne = async function(once=false) {
     if (updatingNow) {return} 
     updatingNow = true;    // prevent multiple simultaneous updates from SoftOne
     const separationSeconds = 1;
     try {
 
+        const dataCollections = ['customers', 'frames', 'lens', 'colors', 'services'];
+        
         await delay(separationSeconds);
         console.log("Έναρξη λήψης πελατών και προϊόντων από το SoftOne");
 
-        const requests = [
-            SoftOne.customers,
-            SoftOne.frames,
-            SoftOne.lens,
-            SoftOne.colors,
-        ];
+        // const requests = [SoftOne.customers, SoftOne.frames, SoftOne.lens, 'κλπ'];
+        const requests = dataCollections.map(collection => SoftOne[collection]);
 
-        for (let i = 0; i < requests.length; i++) { // forEach can't await
-            await requests[i]();
-            if (i < requests.length - 1) {await delay(separationSeconds)}
+        // forEach can't await
+        for (const request of requests) {
+            await request();
+            await delay(separationSeconds);
         }
 
-        // Data is OK, if we have data from this or previous fetch.
-        dataOK = (Data.customers.length && Data.frames.length && Data.lens.length && Data.colors.length);   
+        // Data is OK, if we have data from this or previous fetch (every collection is non empty)
+        dataOK = dataCollections.every(collection => Data[collection]?.length);
         if (dataOK) {
             console.log(`\x1b[32m Η υπηρεσία είναι έτοιμη! \x1b[0m`);
         } else {
@@ -111,10 +110,6 @@ let fetchEverythingFromSoftOne = async function(once=false) {
 dbTest(db).then(_=>{
     fetchEverythingFromSoftOne();
 });
-
-// SoftOne.customers();
-// SoftOne.frames();
-// SoftOne.lens();
 
 
 
