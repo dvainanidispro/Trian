@@ -3,10 +3,13 @@
 /** Σταθερά κόστη e-shop */
 let costOf = {
     /** H τιμή της κάρτας ανά κατασκευαστή για ζευγάρια φακών με retail */
-    card: { trian: 1, tokai: 0.1 },
+    card: process.env.COSTOF_CARD ? JSON.parse(process.env.COSTOF_CARD) : { trian: 2, tokai: 0.1 },
     /** Το κόστος αντικαταβολής */
-    cod: 1.9,
+    cod: process.env.COSTOF_COD ? parseFloat(process.env.COSTOF_COD) : 1.9,
 };
+// Μετατροπή σε αριθμούς, ώστε αν βάλεις stirngs στο .env αντί για αριθμούς, να δουλέψει σωστά.
+costOf.card = Object.fromEntries(Object.entries(costOf.card).map(([k, v]) => [k, Number(v)]));
+costOf.cod = Number(costOf.cod);
 
 /** 
  * Έκπτωση. Αναγράφεται το ποσοστό % της έκπτωσης χωρίς να υπολογίζεται η τελική τιμή
