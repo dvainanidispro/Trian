@@ -24,6 +24,11 @@ router.post('/lens/trian', firebaseUser, (req,res) => {
     res.json(multiFilter(lens,filter,filterLimit));
 });
 
+router.post('/lens/trian-plano', firebaseUser, (req,res) => {  // This route does not implement a filter Object
+    let lens = req.customer ? DataForCustomers.lensTrianPlano : PublicData.lensTrianPlano;
+    res.json(lens);
+});
+
 router.post('/lens/tokai', firebaseUser, (req,res) => {
     let lens = req.customer ? DataForCustomers.lensTokai : PublicData.lensTokai;
     let filter = req.body;

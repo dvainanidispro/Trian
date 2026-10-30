@@ -198,6 +198,7 @@ SoftOne.lens = async function(){
                 "Παράδοση": len['Παράδοση'],
                 "ΤιμΚατ": len['ΤιμολογιακήΚατηγορία'],
                 "Χρώμα": len['Χρώμα'],
+                "ΒάσηΚαμπυλότητας": len['ΒάσηΚαμπυλότητας'] ?? '',       // Δεν υπάρχει πάντα. 
             };
         });
         DataForCustomers.lens = lens.map(len => {
@@ -216,6 +217,7 @@ SoftOne.lens = async function(){
                 "Παράδοση": len['Παράδοση'],
                 "ΤιμΚατ": len['ΤιμολογιακήΚατηγορία'],
                 "Χρώμα": len['Χρώμα'],
+                "ΒάσηΚαμπυλότητας": len['ΒάσηΚαμπυλότητας'] ?? '',      // Δεν υπάρχει πάντα. 
                 "Τιμή": len['Χονδρικής'],
                 "Υπόλοιπο": len['Υπόλοιπο'],
             };
@@ -259,20 +261,29 @@ SoftOne.colors = async function(){
     let response = await SoftOne.fetch('ColorsInfo',false);
     try{
         let colors = response['rows'];
-        Data.colors = colors;
         let count = response['totalcount'];
         console.log(`Ήρθαν ${count} χρώματα`);
+        colors = colors.map(color => {
+            const darknessIds = color['Σκουρότητες']?.trim()
+                ? color['Σκουρότητες'].split(',').map(id => id.trim())
+                : [];
+            const darknesses = color['Σκουρότητες info'] ? JSON.parse(color['Σκουρότητες info']) : [];
 
-        PublicData.colors = colors.map(color => {
             return {
                 "id": color['Χρώμα'],
                 "name": color['Χρώμα Ονομασία'],
-                "darknessIds": color['Σκουρότητες']?.split(',').map(darkness => darkness.trim()) ?? [],
-                "darknesses": color['Σκουρότητες info'] ? JSON.parse(color['Σκουρότητες info']) : [],
+                "darknesses": darknesses.map((darkness, index) => ({
+                    "id": darknessIds[index],
+                    "code": darkness['Σκουρότητα'],
+                    "name": darkness['Σκουρότητα Ονομασία'],
+                })),
             };
         });
+
+        Data.colors = colors;
+        PublicData.colors = colors;
     }catch(error){
-        console.error("Error loading colors from SoftOne");
+        console.error("Error loading colors from SoftOne", error);
     }
 };
 

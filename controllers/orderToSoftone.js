@@ -1,7 +1,6 @@
 'use strict';
 
 const axios = require('axios');
-const softOneQueue = require('../models/softone_queue.js');
 
 /** Αντιστοίχιση κλειδιών της παραγγελίας με τα απαιτούμενα από το SoftOne */
 const keyMap = {
@@ -93,6 +92,8 @@ function proccessSoftOneOrder(order) {
 
 /** Καταχώριση αποτελέσματος αποστολής στο softone_queue δημιουργώντας νέα εγγραφή */
 async function storeSoftoneOrder(order, softoneResponse) {
+    // Μπαίνει εδώ το require για να μην καλείται από το αυτόνομο private\OrderToSoftone\convert.js
+    const softOneQueue = require('../models/softone_queue.js');
     return softOneQueue.create({
         orderId: order.id,
         status: softoneResponse.success ? 'completed' : 'pending',
@@ -176,4 +177,5 @@ async function sendOrderToSoftOne(order, retry = false) {
 }
 
 
-module.exports = { sendOrderToSoftOne };
+module.exports = { sendOrderToSoftOne, proccessSoftOneOrder };
+// Η proccessSoftOneOrder γίνεται export για χρήση από το private\OrderToSoftone\convert.js (αυτόνομο module)

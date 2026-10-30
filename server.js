@@ -35,7 +35,7 @@ require('./controllers/orderQueue.js');
 ///////////////////////////////         VARIABLES & FUNCTIONS         ////////////////////////////////
 
 // SoftOneData
-let {SoftOne, Data, getCustomer} = require('./controllers/SoftOne.js');
+let {SoftOne, Data, PublicData, getCustomer} = require('./controllers/SoftOne.js');
 
 // Middleware
 let {validateSystemToken, validate} = require('./controllers/validate.js');
@@ -177,6 +177,12 @@ server.use('/api/test', testRouter);
 const showRouter = require('./routes/show.js');
 server.use('/show', showRouter);
 
+
+////////////////////////////////             COLOR ROUTES              //////////////////////////////////
+
+server.get(['/api/colors', '/api/colors.json'], (req,res) => {
+    res.json(PublicData.colors);
+});
 
 
 ////////////////////////////////             FILTER ROUTES             //////////////////////////////////
