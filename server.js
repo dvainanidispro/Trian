@@ -39,6 +39,7 @@ let {SoftOne, Data, PublicData, getCustomer} = require('./controllers/SoftOne.js
 
 // Middleware
 let {validateSystemToken, validate} = require('./controllers/validate.js');
+let {cacheResponse} = require('./controllers/middleware.js');
 
 // Firebase
 const {validateFirebaseToken} = require('./controllers/firebase.js');
@@ -180,7 +181,8 @@ server.use('/show', showRouter);
 
 ////////////////////////////////             COLOR ROUTES              //////////////////////////////////
 
-server.get(['/api/colors', '/api/colors.json'], (req,res) => {
+// TODO: Να αφαιρεθούν σε επόμενη έκδοση, μόλις το e-shop χρησιμοποιεί το /api/filter/colors.
+server.get(['/api/colors', '/api/colors.json'], cacheResponse, (req,res) => {
     res.json(PublicData.colors);
 });
 
