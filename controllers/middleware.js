@@ -10,8 +10,6 @@ const longCacheHours = 12;
 // Full API paths that use the shorter cache duration (including route aliases). 
 // Μόνο τα GET έχουν νόημα, δίοτι o browser δεν αποθηκεύει στην cache τις απαντήσεις για τα POST requests.
 const shortCachePaths = [
-    '/api/colors',      // remove this
-    '/api/colors.json', // remove this
     '/api/filter/colors',
     '/api/filter/colors.json',
     '/api/filter/frames',

@@ -35,11 +35,10 @@ require('./controllers/orderQueue.js');
 ///////////////////////////////         VARIABLES & FUNCTIONS         ////////////////////////////////
 
 // SoftOneData
-let {SoftOne, Data, PublicData, getCustomer} = require('./controllers/SoftOne.js');
+let {SoftOne, Data, getCustomer} = require('./controllers/SoftOne.js');
 
 // Middleware
 let {validateSystemToken, validate} = require('./controllers/validate.js');
-let {cacheResponse} = require('./controllers/middleware.js');
 
 // Firebase
 const {validateFirebaseToken} = require('./controllers/firebase.js');
@@ -166,25 +165,14 @@ server.get(['/api/profile','/profile'], validateFirebaseToken, (req,res) => {
 
 ////////////////////////////////      API ROUTES FOR TESTING      ///////////////////////////////////
 
-
-
 const testRouter = require('./routes/test.js');
 server.use('/api/test', testRouter);
-
 
 
 ////////////////////////////////        REALTIME "SHOW" ROUTES         //////////////////////////////////
 
 const showRouter = require('./routes/show.js');
 server.use('/show', showRouter);
-
-
-////////////////////////////////             COLOR ROUTES              //////////////////////////////////
-
-// TODO: Να αφαιρεθούν σε επόμενη έκδοση, μόλις το e-shop χρησιμοποιεί το /api/filter/colors.
-server.get(['/api/colors', '/api/colors.json'], cacheResponse, (req,res) => {
-    res.json(PublicData.colors);
-});
 
 
 ////////////////////////////////             FILTER ROUTES             //////////////////////////////////
@@ -210,6 +198,7 @@ server.use('/api/order', orderRouter);
 server.post('/api/validate/cart', validateFirebaseToken, (req,res) => {
     res.json(validate.cart(req.body,req.customer));
 });
+
 
 
 //////////////////////////      PROTECTED API ROUTES FOR SYSTEM AND FIREBASE      //////////////////
